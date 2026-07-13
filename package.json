@@ -1,0 +1,19 @@
+{
+  "name": "html-em-pdf",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:web": "npm run dev -w @html-pdf/web",
+    "dev:api": "npm run dev:api -w @html-pdf/service",
+    "dev:worker": "npm run dev:worker -w @html-pdf/service",
+    "build": "npm run build -w @html-pdf/service && npm run build -w @html-pdf/web",
+    "test": "npm run test -w @html-pdf/service && npm run test -w @html-pdf/web",
+    "lint": "npm run lint -w @html-pdf/service && npm run lint -w @html-pdf/web"
+  },
+  "engines": { "node": ">=22" },
+  "overrides": {
+    "postcss": "8.5.17",
+    "next@15.5.20": { "postcss": "8.5.17" }
+  }
+}

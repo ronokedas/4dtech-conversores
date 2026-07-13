@@ -1,0 +1,156 @@
+name: html-em-pdf
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8090}
+      API_INTERNAL_ORIGIN: http://api:4000
+      NEXT_PUBLIC_API_BASE: /api
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+      NEXT_PUBLIC_ADSENSE_CLIENT: ${NEXT_PUBLIC_ADSENSE_CLIENT:-}
+      NEXT_PUBLIC_ADSENSE_HOME_SLOT: ${NEXT_PUBLIC_ADSENSE_HOME_SLOT:-}
+      NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT: ${NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT:-}
+      NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    logging: &logging
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/service/Dockerfile
+      target: api
+    environment: &service-env
+      NODE_ENV: production
+      PORT: 4000
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      JOB_DIR: /data/jobs
+      JOB_TTL_SECONDS: ${JOB_TTL_SECONDS:-3600}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-25}
+      MAX_EXTRACTED_MB: ${MAX_EXTRACTED_MB:-100}
+      MAX_ZIP_FILES: ${MAX_ZIP_FILES:-500}
+      MAX_PDF_MB: ${MAX_PDF_MB:-50}
+      CONVERSION_TIMEOUT_MS: ${CONVERSION_TIMEOUT_MS:-45000}
+      IMAGE_TIMEOUT_MS: ${IMAGE_TIMEOUT_MS:-60000}
+      MAX_IMAGE_UPLOAD_MB: ${MAX_IMAGE_UPLOAD_MB:-15}
+      BACKGROUND_SERVICE_URL: http://background:5000
+      RATE_LIMIT_10_MINUTES: ${RATE_LIMIT_10_MINUTES:-300}
+      RATE_LIMIT_HOUR: ${RATE_LIMIT_HOUR:-2000}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    volumes:
+      - jobs:/data/jobs
+    depends_on:
+      redis:
+        condition: service_healthy
+      jobs-init:
+        condition: service_completed_successfully
+      background:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    logging: *logging
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/service/Dockerfile
+      target: worker
+    environment:
+      <<: *service-env
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+    volumes:
+      - jobs:/data/jobs
+    depends_on:
+      redis:
+        condition: service_healthy
+      jobs-init:
+        condition: service_completed_successfully
+      background:
+        condition: service_healthy
+    restart: unless-stopped
+    shm_size: "1gb"
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  background:
+    build:
+      context: .
+      dockerfile: apps/background/Dockerfile
+    volumes:
+      - jobs:/data/jobs
+      - background_models:/models
+    depends_on:
+      jobs-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=3).read()"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+  jobs-init:
+    image: alpine:3.22
+    command: sh -c "chown -R 1000:1001 /data/jobs && chmod 2770 /data/jobs"
+    volumes:
+      - jobs:/data/jobs
+    restart: "no"
+    logging: *logging
+
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --save "" --appendonly no --maxmemory 256mb --maxmemory-policy noeviction
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging: *logging
+
+  caddy:
+    image: caddy:2.10-alpine
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-http://localhost}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    ports:
+      - "${HOST_PORT:-8090}:80"
+      - "${HTTPS_PORT:-8443}:443"
+      - "${HTTPS_UDP_PORT:-8443}:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  jobs:
+  caddy_data:
+  caddy_config:
+  background_models:

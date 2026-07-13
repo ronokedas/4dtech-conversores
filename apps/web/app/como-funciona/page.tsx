@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import { ContentPage } from "@/components/ContentPage";
+import { HowItWorks } from "@/components/HowItWorks";
+export const metadata: Metadata = { title: "Como funciona", description: "Entenda como converter HTML, ZIP e páginas por URL em PDF com segurança." };
+export default function Page() { return <ContentPage title="Como funciona" intro="Do envio ao download, a conversão foi pensada para ser simples e proteger seus arquivos."><HowItWorks/><h2>Arquivos HTML e ZIP</h2><p>Um HTML simples pode ser enviado diretamente. Quando a página usa imagens, folhas de estilo ou fontes locais, reúna tudo em um ZIP. Use <code>index.html</code> como página principal.</p><h2>Conversão por URL</h2><p>Cole o endereço completo de uma página pública. O serviço abre a página em um navegador isolado, aguarda seu conteúdo e cria o PDF em formato A4.</p><h2>Exclusão automática</h2><p>O arquivo convertido é disponibilizado por um link único. Após a transferência completa, os arquivos são apagados. Trabalhos não baixados expiram em até uma hora.</p></ContentPage>; }

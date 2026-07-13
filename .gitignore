@@ -1,0 +1,10 @@
+node_modules/
+.next/
+dist/
+.env
+.env.local
+coverage/
+work/
+jobs/
+*.log
+.chrome-pdf-profile/

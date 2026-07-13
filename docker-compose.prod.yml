@@ -1,0 +1,5 @@
+services:
+  caddy:
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
+      ACME_EMAIL: ${ACME_EMAIL}
