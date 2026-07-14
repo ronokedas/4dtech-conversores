@@ -4,11 +4,17 @@ Projeto: **Documentos Online - 4D Tech**
 
 Este manual mostra o caminho completo para enviar o projeto ao GitHub, baixar na VPS pelo GitHub, configurar Docker, domínio, HTTPS, AdSense, Turnstile e sitemap.
 
+Antes de publicar, use também o checklist rápido:
+
+```txt
+CHECKLIST_PUBLICACAO.md
+```
+
 > Substitua os exemplos abaixo pelo seu domínio, usuário e repositório.
 >
 > Exemplo de domínio usado no manual: `documentosonline.com.br`
 >
-> Exemplo de repositório: `https://github.com/SEU-USUARIO/documentos-online-4dtech.git`
+> Repositório atual do projeto: `https://github.com/ronokedas/4dtech-conversores.git`
 
 ---
 
@@ -92,7 +98,7 @@ Nunca envie para o GitHub:
 3. Nome sugerido:
 
 ```txt
-documentos-online-4dtech
+4dtech-conversores
 ```
 
 4. Pode deixar como **Private** no começo.
@@ -110,7 +116,7 @@ git init
 git add .
 git commit -m "Versao inicial Documentos Online 4D Tech"
 git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/documentos-online-4dtech.git
+git remote add origin https://github.com/ronokedas/4dtech-conversores.git
 git push -u origin main
 ```
 
@@ -230,8 +236,8 @@ cd /opt/sites
 Clone o projeto:
 
 ```bash
-git clone https://github.com/SEU-USUARIO/documentos-online-4dtech.git
-cd documentos-online-4dtech
+git clone https://github.com/ronokedas/4dtech-conversores.git
+cd 4dtech-conversores
 ```
 
 Se o repositório for privado, o GitHub pode pedir autenticação via token.
@@ -634,7 +640,7 @@ git push
 Na VPS:
 
 ```bash
-cd /opt/sites/documentos-online-4dtech
+cd /opt/sites/4dtech-conversores
 git pull
 docker compose up -d --build
 ```
