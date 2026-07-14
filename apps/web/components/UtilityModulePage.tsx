@@ -25,7 +25,7 @@ type Props = {
 
 export function UtilityModulePage({ tool, children, uploadTitle, ...uploader }: Props) {
   return <article className="container tool-page">
-    <nav className="breadcrumb" aria-label="Navegacao estrutural"><a href="/">Inicio</a><span>›</span><a href="/ferramentas">Ferramentas</a><span>›</span><span>{tool.title}</span></nav>
+    <nav className="breadcrumb" aria-label="Navegação estrutural"><a href="/">Início</a><span>›</span><a href="/ferramentas">Ferramentas</a><span>›</span><span>{tool.title}</span></nav>
     <div className="tool-layout">
       <div>
         <header className="tool-header">

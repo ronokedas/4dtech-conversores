@@ -16,7 +16,7 @@ export function ToolsGrid({ title = "Escolha uma ferramenta", intro }: { title?:
         <p>{tool.description}</p>
         <span className={`status-chip ${tool.status}`}>
           {tool.status === "available" ? <CheckCircle2 /> : <Clock />}
-          {tool.status === "available" ? "Disponivel" : "Em breve"}
+          {tool.status === "available" ? "Disponível" : "Em breve"}
         </span>
         <span className={tool.status === "available" ? "tool-action primary" : "tool-action"}>
           {tool.status === "available" ? "Usar ferramenta" : "Saiba mais"} <ArrowRight />

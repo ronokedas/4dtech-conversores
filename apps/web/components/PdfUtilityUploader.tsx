@@ -55,7 +55,7 @@ export function PdfUtilityUploader({ endpoint, accept, allowedExtensions, multip
         return;
       }
       if (file.size > maxMb * 1024 * 1024) {
-        setError(`Cada arquivo deve ter no maximo ${maxMb} MB.`);
+        setError(`Cada arquivo deve ter no máximo ${maxMb} MB.`);
         return;
       }
     }
@@ -77,10 +77,10 @@ export function PdfUtilityUploader({ endpoint, accept, allowedExtensions, multip
       Object.entries(values).forEach(([name, value]) => data.append(name, value));
       const response = await fetch(`${apiBase}/conversions/${endpoint}`, { method: "POST", body: data });
       const result = await response.json() as { token?: string; message?: string };
-      if (!response.ok || !result.token) throw new Error(result.message || "Nao foi possivel iniciar o processamento.");
+      if (!response.ok || !result.token) throw new Error(result.message || "Não foi possível iniciar o processamento.");
       router.push(`/baixar/${result.token}`);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Nao foi possivel iniciar o processamento.");
+      setError(cause instanceof Error ? cause.message : "Não foi possível iniciar o processamento.");
       setBusy(false);
     }
   }

@@ -51,84 +51,84 @@ export function DownloadStatus({ token }: { token: string }) {
   const copy = useMemo(() => {
     let processingTitle = "Estamos preparando seu arquivo";
     let processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Processando arquivo...";
-    let successTitle = "Seu PDF esta pronto";
+    let successTitle = "Seu PDF está pronto";
     let downloadText = "Baixar PDF";
     let anotherText = "Usar novamente";
-    let helpText = "Confira se o arquivo ficou como esperado. Se precisar, volte ao modulo e gere uma nova versao.";
+    let helpText = "Confira se o arquivo ficou como esperado. Se precisar, volte ao módulo e gere uma nova versão.";
 
     if (isQrCode) {
       processingTitle = "Estamos gerando seu QR Code";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Criando a imagem PNG...";
-      successTitle = "Seu QR Code esta pronto";
+      successTitle = "Seu QR Code está pronto";
       downloadText = "Baixar PNG";
       anotherText = "Gerar outro QR Code";
-      helpText = "Teste o QR Code com a camera do celular antes de imprimir ou compartilhar em grande escala.";
+      helpText = "Teste o QR Code com a câmera do celular antes de imprimir ou compartilhar em grande escala.";
     } else if (isBackground) {
       processingTitle = "Estamos removendo o fundo";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Processando a imagem...";
-      successTitle = "Sua imagem esta pronta";
+      successTitle = "Sua imagem está pronta";
       downloadText = "Baixar PNG transparente";
       anotherText = "Remover outro fundo";
-      helpText = "Use o PNG transparente em lojas virtuais, apresentacoes, redes sociais ou materiais de marketing.";
+      helpText = "Use o PNG transparente em lojas virtuais, apresentações, redes sociais ou materiais de marketing.";
     } else if (isImageTool) {
       processingTitle = "Estamos processando sua imagem";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Otimizando a imagem...";
-      successTitle = "Sua imagem esta pronta";
+      successTitle = "Sua imagem está pronta";
       downloadText = data.mimeType === "image/webp" ? "Baixar WebP" : data.mimeType === "image/jpeg" ? "Baixar JPG" : "Baixar PNG";
       anotherText = "Processar outra imagem";
-      helpText = "Abra a imagem final e confira dimensoes, qualidade e formato antes de publicar em sites, redes sociais ou materiais.";
+      helpText = "Abra a imagem final e confira dimensões, qualidade e formato antes de publicar em sites, redes sociais ou materiais.";
     } else if (isWord) {
       processingTitle = "Estamos convertendo seu Word";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo o documento...";
       anotherText = "Converter outro Word";
-      helpText = "Confira se textos, imagens e quebras de pagina aparecem como esperado no PDF final.";
+      helpText = "Confira se textos, imagens e quebras de página aparecem como esperado no PDF final.";
     } else if (isExcel) {
       processingTitle = "Estamos convertendo seu Excel";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo a planilha...";
       anotherText = "Converter outro Excel";
-      helpText = "Confira se as colunas e paginas ficaram legiveis. Se precisar, gere uma nova versao em outra orientacao.";
+      helpText = "Confira se as colunas e páginas ficaram legíveis. Se precisar, gere uma nova versão em outra orientação.";
     } else if (isPdfWord) {
       processingTitle = "Estamos convertendo seu PDF";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Criando o arquivo Word...";
-      successTitle = "Seu Word esta pronto";
+      successTitle = "Seu Word está pronto";
       downloadText = "Baixar Word";
       anotherText = "Converter outro PDF";
-      helpText = "Abra o DOCX e confira se textos e imagens ficaram editaveis. PDFs escaneados podem precisar de OCR em uma etapa futura.";
+      helpText = "Abra o DOCX e confira se textos e imagens ficaram editáveis. PDFs escaneados podem precisar de OCR em uma etapa futura.";
     } else if (isPdfExcel) {
       processingTitle = "Estamos extraindo os dados";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Montando a planilha...";
-      successTitle = "Seu Excel esta pronto";
+      successTitle = "Seu Excel está pronto";
       downloadText = "Baixar Excel";
       anotherText = "Converter outro PDF";
       helpText = "Abra o XLSX e confira as colunas. PDFs escaneados ou tabelas muito visuais podem precisar de OCR em uma etapa futura.";
     } else if (isEditPdf) {
       processingTitle = "Estamos editando seu PDF";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Aplicando o texto...";
-      helpText = "Abra o PDF editado e confira se o texto apareceu na pagina e posicao escolhidas.";
+      helpText = "Abra o PDF editado e confira se o texto apareceu na página e posição escolhidas.";
     } else if (isZip) {
       processingTitle = "Estamos criando suas imagens";
-      successTitle = "Suas imagens estao prontas";
+      successTitle = "Suas imagens estão prontas";
       downloadText = "Baixar ZIP";
-      helpText = "Descompacte o ZIP para acessar as imagens JPG geradas a partir das paginas do PDF.";
+      helpText = "Descompacte o ZIP para acessar as imagens JPG geradas a partir das páginas do PDF.";
     } else if (isText) {
-      processingTitle = "Estamos transcrevendo seu audio";
+      processingTitle = "Estamos transcrevendo seu áudio";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo fala em texto...";
-      successTitle = "Sua transcricao esta pronta";
+      successTitle = "Sua transcrição está pronta";
       downloadText = "Baixar TXT";
-      anotherText = "Transcrever outro audio";
-      helpText = "Abra o TXT, revise nomes proprios e pontuacao, e copie o texto para seu documento final.";
+      anotherText = "Transcrever outro áudio";
+      helpText = "Abra o TXT, revise nomes próprios e pontuação, e copie o texto para seu documento final.";
     } else if (isVideoMp3) {
-      processingTitle = "Estamos extraindo o audio";
-      processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo video para MP3...";
-      successTitle = "Seu MP3 esta pronto";
+      processingTitle = "Estamos extraindo o áudio";
+      processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo vídeo para MP3...";
+      successTitle = "Seu MP3 está pronto";
       downloadText = "Baixar MP3";
-      anotherText = "Converter outro video";
+      anotherText = "Converter outro vídeo";
       helpText = "Ouça o MP3 para conferir volume e duração. Vídeos sem áudio não geram um resultado útil.";
     }
 
     return {
       processingTitle,
-      processingText: isBackground ? "Isso pode levar alguns segundos na primeira imagem. Nao feche esta pagina." : "Isso normalmente leva apenas alguns segundos. Nao feche esta pagina.",
+      processingText: isBackground ? "Isso pode levar alguns segundos na primeira imagem. Não feche esta página." : "Isso normalmente leva apenas alguns segundos. Não feche esta página.",
       processingSmall,
       successTitle,
       downloadText,
@@ -153,7 +153,7 @@ export function DownloadStatus({ token }: { token: string }) {
   }, [apiBase, token]);
 
   if (["queued", "processing"].includes(data.status)) return <section className="download-state" aria-live="polite"><div className="status-icon processing"><span className="spinner large" /></div><h1>{copy.processingTitle}</h1><p>{copy.processingText}</p><div className="progress"><span /></div><small>{copy.processingSmall}</small></section>;
-  if (data.status === "failed" || data.status === "expired") return <section className="download-state" aria-live="assertive"><div className="status-icon error"><TriangleAlert /></div><h1>{data.status === "expired" ? "Este arquivo expirou" : "Nao foi possivel processar"}</h1><p>{data.error || "O arquivo nao esta mais disponivel. Faca uma nova tentativa."}</p><Link href={anotherHref} className="button primary"><RefreshCw size={18}/> Tentar novamente</Link></section>;
+  if (data.status === "failed" || data.status === "expired") return <section className="download-state" aria-live="assertive"><div className="status-icon error"><TriangleAlert /></div><h1>{data.status === "expired" ? "Este arquivo expirou" : "Não foi possível processar"}</h1><p>{data.error || "O arquivo não está mais disponível. Faça uma nova tentativa."}</p><Link href={anotherHref} className="button primary"><RefreshCw size={18}/> Tentar novamente</Link></section>;
   const Icon = isText || isVideoMp3 ? Mic : (isQrCode ? QrCode : (isImage || isZip ? FileImage : FileText));
-  return <><section className="download-state success" aria-live="polite"><div className="status-icon success"><Check /></div><h1>{copy.successTitle}</h1><p>O arquivo sera apagado do servidor depois que o download terminar.</p><div className="file-row"><Icon aria-hidden="true"/><div><strong>{data.filename}</strong><span>{formatSize(data.size)}</span></div></div><a className="button primary download-button" href={`${apiBase}/conversions/${token}/download`}><Download size={19}/> {copy.downloadText}</a><Link className="button secondary" href={copy.anotherHref}><RefreshCw size={17}/> {copy.anotherText}</Link></section><div className="download-ad-separator"><AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT}/></div><section className="download-help"><h2>{copy.helpTitle}</h2><p>{copy.helpText}</p><Link href="/ferramentas">Ver outras ferramentas</Link></section></>;
+  return <><section className="download-state success" aria-live="polite"><div className="status-icon success"><Check /></div><h1>{copy.successTitle}</h1><p>O arquivo será apagado do servidor depois que o download terminar.</p><div className="file-row"><Icon aria-hidden="true"/><div><strong>{data.filename}</strong><span>{formatSize(data.size)}</span></div></div><a className="button primary download-button" href={`${apiBase}/conversions/${token}/download`}><Download size={19}/> {copy.downloadText}</a><Link className="button secondary" href={copy.anotherHref}><RefreshCw size={17}/> {copy.anotherText}</Link></section><div className="download-ad-separator"><AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT}/></div><section className="download-help"><h2>{copy.helpTitle}</h2><p>{copy.helpText}</p><Link href="/ferramentas">Ver outras ferramentas</Link></section></>;
 }

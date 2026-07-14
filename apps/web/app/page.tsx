@@ -8,7 +8,7 @@ import { getToolBySlug } from "@/lib/tools";
 
 export const metadata: Metadata = {
   title: "Ferramentas online para documentos e imagens",
-  description: "Converta HTML, TXT e Markdown em PDF, transcreva audio, gere QR Code, edite imagens e acesse ferramentas online para Word, Excel e PDF.",
+  description: "Converta HTML, TXT e Markdown em PDF, transcreva áudio, gere QR Code, edite imagens e acesse ferramentas online para Word, Excel e PDF.",
   alternates: { canonical: "/" },
 };
 
@@ -19,14 +19,14 @@ export default function Home() {
       <div className="container platform-hero-inner">
         <div className="platform-copy">
           <h1>Ferramentas online para documentos e imagens.</h1>
-          <p>Converta documentos em PDF, gere QR Code, transcreva audio, extraia MP3 de videos, edite imagens e acesse modulos exclusivos para Word, Excel e PDF.</p>
+          <p>Converta documentos em PDF, gere QR Code, transcreva áudio, extraia MP3 de vídeos, edite imagens e acesse módulos exclusivos para Word, Excel e PDF.</p>
         </div>
         <div className="quick-actions" aria-label="Comece agora">
           <h2>Comece agora</h2>
           <div>
             {featuredTools.map((tool) => <Link href={tool.href} className="quick-action" key={tool.slug}>
               <ToolIcon tool={tool} />
-              <span><strong>{tool.title}</strong><small>{tool.slug === "html-para-pdf" ? "Converter agora" : "Comecar agora"} <ArrowRight size={15} /></small></span>
+              <span><strong>{tool.title}</strong><small>{tool.slug === "html-para-pdf" ? "Converter agora" : "Começar agora"} <ArrowRight size={15} /></small></span>
             </Link>)}
           </div>
         </div>
@@ -34,10 +34,10 @@ export default function Home() {
     </section>
     <div className="container">
       <ToolsGrid intro="Ferramentas simples para resolver tarefas de documentos, PDF e imagens sem instalar nada." />
-      <section className="trust-band" aria-label="Seguranca e privacidade">
-        <div><ShieldCheck /><strong>Seguro e privado</strong><p>Seus arquivos temporarios sao excluidos automaticamente.</p></div>
-        <div><LockKeyhole /><strong>100% online</strong><p>Todas as ferramentas funcionam no navegador, sem instalacao.</p></div>
-        <div><CheckCircle2 /><strong>Gratis para usar</strong><p>Ferramentas essenciais gratuitas para facilitar o seu dia.</p></div>
+      <section className="trust-band" aria-label="Segurança e privacidade">
+        <div><ShieldCheck /><strong>Seguro e privado</strong><p>Seus arquivos temporários são excluídos automaticamente.</p></div>
+        <div><LockKeyhole /><strong>100% online</strong><p>Todas as ferramentas funcionam no navegador, sem instalação.</p></div>
+        <div><CheckCircle2 /><strong>Grátis para usar</strong><p>Ferramentas essenciais gratuitas para facilitar o seu dia.</p></div>
         <div><MonitorSmartphone /><strong>Funciona em qualquer lugar</strong><p>Acesse de celular, tablet ou computador.</p></div>
       </section>
       <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
