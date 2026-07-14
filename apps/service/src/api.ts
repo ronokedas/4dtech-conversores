@@ -15,7 +15,7 @@ import { pdfOptionsSchema, type ConversionJob, type PdfUtilityJob } from "./type
 process.umask(0o007);
 const app = Fastify({ logger: { redact: ["req.headers.authorization", "req.body", "req.url"] }, bodyLimit: config.maxUploadBytes * 10 });
 await app.register(cors, { origin: false });
-await app.register(multipart, { limits: { files: 25, fileSize: config.maxUploadBytes, fields: 16 } });
+await app.register(multipart, { limits: { files: 25, fileSize: Math.max(config.maxUploadBytes, config.maxImageUploadBytes, config.maxAudioUploadBytes, config.maxVideoUploadBytes), fields: 16 } });
 await fs.mkdir(config.jobDir, { recursive: true });
 
 app.get("/health", async () => ({ ok: true }));
@@ -27,6 +27,8 @@ async function makeJobDir(token: string) {
 }
 
 const pdfUtilityTypes = new Set<PdfUtilityJob["type"]>(["compress-pdf", "merge-pdf", "split-pdf", "image-pdf", "pdf-jpg", "sign-pdf", "protect-pdf", "unlock-pdf", "organize-pdf"]);
+const imageExtensions = [".png", ".jpg", ".jpeg", ".webp"];
+const videoExtensions = [".mp4", ".mov", ".mkv", ".webm", ".avi", ".mpeg", ".mpg", ".m4v"];
 type UtilityOptions = {
   type: PdfUtilityJob["type"];
   allowedExtensions: string[];
@@ -94,6 +96,45 @@ async function createPdfUtilityJob(request: FastifyRequest, reply: FastifyReply,
     await setRecord(token, { status: "queued", tool: options.defaultTool || options.type, updatedAt: Date.now() });
     await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
     return reply.code(202).send({ token });
+  } catch (error) {
+    await fs.rm(dir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+function safeInt(value: string | undefined, fallback: number, min: number, max: number) {
+  const parsed = Number.parseInt(value || "", 10);
+  return Number.isFinite(parsed) ? Math.max(min, Math.min(max, parsed)) : fallback;
+}
+
+async function createSingleFileJob(request: FastifyRequest, options: { allowedExtensions: string[]; defaultName: string; maxBytes: number }) {
+  const ip = await enforceRateLimit(request);
+  const token = crypto.randomBytes(24).toString("base64url");
+  const dir = await makeJobDir(token);
+  let inputPath = "";
+  let originalName = options.defaultName;
+  const fields: Record<string, string> = {};
+  try {
+    for await (const part of request.parts()) {
+      if (part.type === "file") {
+        if (inputPath) throw Object.assign(new Error("Envie apenas um arquivo."), { statusCode: 400 });
+        originalName = path.basename(part.filename || options.defaultName);
+        const ext = path.extname(originalName).toLowerCase();
+        if (!options.allowedExtensions.includes(ext)) throw Object.assign(new Error(`Formato invalido. Use: ${options.allowedExtensions.join(", ")}.`), { statusCode: 400 });
+        inputPath = path.join(dir, `input${ext}`);
+        await pipeline(part.file, createWriteStream(inputPath, { flags: "wx", mode: 0o640 }));
+        if (part.file.truncated) throw Object.assign(new Error("O arquivo ultrapassa o limite de tamanho."), { statusCode: 413 });
+        const stat = await fs.stat(inputPath);
+        if (stat.size > options.maxBytes) throw Object.assign(new Error("O arquivo ultrapassa o limite permitido para esta ferramenta."), { statusCode: 413 });
+      } else {
+        fields[part.fieldname] = String(part.value).slice(0, 1000);
+      }
+    }
+    if (!inputPath) throw Object.assign(new Error("Selecione um arquivo para continuar."), { statusCode: 400 });
+    if (!(await verifyTurnstile(fields.turnstileToken, ip, config.turnstileSecret))) {
+      throw Object.assign(new Error("Nao foi possivel validar o desafio de seguranca."), { statusCode: 403 });
+    }
+    return { token, dir, inputPath, originalName, fields };
   } catch (error) {
     await fs.rm(dir, { recursive: true, force: true });
     throw error;
@@ -248,6 +289,62 @@ app.post("/conversions/qr-code", async (request, reply) => {
   const darkColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? `${rawColor}ff` : "#111827ff";
   const job: ConversionJob = { token, type: "qr-code", content, size, margin, darkColor, originalName: "qr-code", createdAt: Date.now() };
   await setRecord(token, { status: "queued", tool: "qr-code", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/txt-pdf", async (request, reply) => {
+  const { token, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: [".txt"], defaultName: "texto.txt", maxBytes: config.maxUploadBytes });
+  const job: ConversionJob = { token, type: "txt-pdf", inputPath, originalName, title: fields.title?.trim().slice(0, 120), fontSize: safeInt(fields.fontSize, 12, 10, 16), createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "txt-pdf", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/markdown-pdf", async (request, reply) => {
+  const { token, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: [".md", ".markdown", ".txt"], defaultName: "documento.md", maxBytes: config.maxUploadBytes });
+  const job: ConversionJob = { token, type: "markdown-pdf", inputPath, originalName, title: fields.title?.trim().slice(0, 120), fontSize: safeInt(fields.fontSize, 12, 10, 16), createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "markdown-pdf", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/compress-image", async (request, reply) => {
+  const { token, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: imageExtensions, defaultName: "imagem.jpg", maxBytes: config.maxImageUploadBytes });
+  const job: ConversionJob = { token, type: "compress-image", inputPath, originalName, quality: safeInt(fields.quality, 75, 35, 95), createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "compress-image", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/resize-image", async (request, reply) => {
+  const { token, dir, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: imageExtensions, defaultName: "imagem.jpg", maxBytes: config.maxImageUploadBytes });
+  const width = fields.width ? safeInt(fields.width, 0, 16, 8000) : undefined;
+  const height = fields.height ? safeInt(fields.height, 0, 16, 8000) : undefined;
+  if (!width && !height) {
+    await fs.rm(dir, { recursive: true, force: true });
+    throw Object.assign(new Error("Informe largura ou altura para redimensionar."), { statusCode: 400 });
+  }
+  const job: ConversionJob = { token, type: "resize-image", inputPath, originalName, width, height, quality: safeInt(fields.quality, 85, 35, 95), createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "resize-image", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/convert-image", async (request, reply) => {
+  const { token, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: imageExtensions, defaultName: "imagem.jpg", maxBytes: config.maxImageUploadBytes });
+  const format = ["jpeg", "png", "webp"].includes(fields.format || "") ? fields.format as "jpeg" | "png" | "webp" : "webp";
+  const job: ConversionJob = { token, type: "convert-image", inputPath, originalName, format, quality: safeInt(fields.quality, 85, 35, 95), createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "convert-image", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/video-mp3", async (request, reply) => {
+  const { token, inputPath, originalName, fields } = await createSingleFileJob(request, { allowedExtensions: videoExtensions, defaultName: "video.mp4", maxBytes: config.maxVideoUploadBytes });
+  const bitrate = ["96k", "128k", "192k", "256k"].includes(fields.bitrate || "") ? fields.bitrate as "96k" | "128k" | "192k" | "256k" : "128k";
+  const job: ConversionJob = { token, type: "video-mp3", inputPath, originalName, bitrate, createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "video-mp3", updatedAt: Date.now() });
   await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
   return reply.code(202).send({ token });
 });

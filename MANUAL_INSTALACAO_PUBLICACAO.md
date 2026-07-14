@@ -270,6 +270,8 @@ MAX_IMAGE_UPLOAD_MB=15
 IMAGE_TIMEOUT_MS=60000
 MAX_AUDIO_UPLOAD_MB=50
 AUDIO_TIMEOUT_MS=900000
+MAX_VIDEO_UPLOAD_MB=100
+MEDIA_TIMEOUT_MS=180000
 WHISPER_MODEL=tiny
 WORKER_CONCURRENCY=2
 
@@ -736,6 +738,10 @@ Antes de mandar tráfego para o site, confira:
 - [ ] Remover fundo funciona.
 - [ ] Transcrever áudio em texto funciona.
 - [ ] Gerador de QR Code funciona.
+- [ ] TXT para PDF funciona.
+- [ ] Markdown para PDF funciona.
+- [ ] Comprimir/redimensionar/converter imagem funcionam.
+- [ ] Vídeo para MP3 funciona.
 - [ ] Comprimir PDF funciona.
 - [ ] Juntar PDF funciona.
 - [ ] Dividir PDF funciona.
@@ -758,6 +764,12 @@ Antes de mandar tráfego para o site, confira:
 /remover-fundo-de-imagem
 /transcrever-audio-em-texto
 /qr-code
+/txt-para-pdf
+/markdown-para-pdf
+/comprimir-imagem
+/redimensionar-imagem
+/converter-imagem
+/video-para-mp3
 /word-para-pdf
 /excel-para-pdf
 /pdf-para-excel
@@ -1155,8 +1167,32 @@ Variáveis:
 ```env
 MAX_AUDIO_UPLOAD_MB=50
 AUDIO_TIMEOUT_MS=900000
+MAX_VIDEO_UPLOAD_MB=100
+MEDIA_TIMEOUT_MS=180000
 WHISPER_MODEL=tiny
 ```
+
+#### `MAX_VIDEO_UPLOAD_MB`
+
+Tamanho mÃ¡ximo do arquivo enviado no mÃ³dulo **VÃ­deo para MP3**.
+
+Recomendado para VPS com 2 cores e 4 GB de RAM:
+
+```env
+MAX_VIDEO_UPLOAD_MB=100
+```
+
+Se a VPS ficar muito carregada, reduza para `50`.
+
+#### `MEDIA_TIMEOUT_MS`
+
+Tempo mÃ¡ximo para conversÃµes de mÃ­dia, como **VÃ­deo para MP3**.
+
+```env
+MEDIA_TIMEOUT_MS=180000
+```
+
+Isso equivale a 3 minutos.
 
 #### `MAX_AUDIO_UPLOAD_MB`
 
@@ -1370,6 +1406,8 @@ HTTPS_UDP_PORT=8443
 NEXT_PUBLIC_API_BASE=/api
 MAX_AUDIO_UPLOAD_MB=50
 AUDIO_TIMEOUT_MS=900000
+MAX_VIDEO_UPLOAD_MB=100
+MEDIA_TIMEOUT_MS=180000
 WHISPER_MODEL=tiny
 
 TURNSTILE_SITE_KEY=

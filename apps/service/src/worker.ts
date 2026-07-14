@@ -5,9 +5,12 @@ import { config } from "./config.js";
 import { removeBackground } from "./background.js";
 import { convert, launchBrowser } from "./convert.js";
 import { editPdf } from "./edit-pdf.js";
+import { processImage } from "./image-tools.js";
+import { convertVideoToMp3 } from "./media-tools.js";
 import { convertExcelToPdf, convertPdfToExcel, convertPdfToWord, convertWordToPdf } from "./office.js";
 import { compressPdf, imageToPdf, mergePdfs, organizePdf, outputName, pdfToJpg, protectPdf, signPdf, splitPdf, unlockPdf } from "./pdf-tools.js";
 import { generateQrCode } from "./qr-code.js";
+import { createTextPdf } from "./text-pdf.js";
 import { transcribeAudio } from "./transcription.js";
 import { bullConnection, connection, setRecord } from "./redis.js";
 import type { ConversionJob } from "./types.js";
@@ -41,6 +44,28 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
     if (job.type === "qr-code") {
       const result = await generateQrCode(job);
       await setRecord(job.token, { status: "ready", filename: "qr-code.png", size: result.size, mimeType: "image/png", outputFile: "output.png", tool: "qr-code", updatedAt: Date.now() });
+      return { size: result.size };
+    }
+
+    if (job.type === "txt-pdf" || job.type === "markdown-pdf") {
+      const result = await createTextPdf(job);
+      const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "documento";
+      await setRecord(job.token, { status: "ready", filename: `${base}.pdf`, size: result.size, mimeType: "application/pdf", outputFile: "output.pdf", tool: job.type, updatedAt: Date.now() });
+      return { size: result.size };
+    }
+
+    if (job.type === "compress-image" || job.type === "resize-image" || job.type === "convert-image") {
+      const result = await processImage(job);
+      const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "imagem";
+      const suffix = job.type === "compress-image" ? "comprimida" : job.type === "resize-image" ? "redimensionada" : "convertida";
+      await setRecord(job.token, { status: "ready", filename: `${base}-${suffix}.${result.extension}`, size: result.size, mimeType: result.mimeType, outputFile: result.outputFile, tool: job.type, updatedAt: Date.now() });
+      return { size: result.size };
+    }
+
+    if (job.type === "video-mp3") {
+      const result = await convertVideoToMp3(job);
+      const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "audio";
+      await setRecord(job.token, { status: "ready", filename: `${base}.mp3`, size: result.size, mimeType: "audio/mpeg", outputFile: "output.mp3", tool: "video-mp3", updatedAt: Date.now() });
       return { size: result.size };
     }
 
@@ -106,12 +131,15 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
       fs.rm(path.join(config.jobDir, job.token, "output.xlsx"), { force: true }),
       fs.rm(path.join(config.jobDir, job.token, "output.zip"), { force: true }),
       fs.rm(path.join(config.jobDir, job.token, "output.txt"), { force: true }),
+      fs.rm(path.join(config.jobDir, job.token, "output.jpg"), { force: true }),
+      fs.rm(path.join(config.jobDir, job.token, "output.webp"), { force: true }),
+      fs.rm(path.join(config.jobDir, job.token, "output.mp3"), { force: true }),
     ]);
     const message = error instanceof Error ? error.message : "Nao foi possivel processar este arquivo.";
     await setRecord(job.token, { status: "failed", error: message.slice(0, 240), updatedAt: Date.now() });
     throw error;
   }
-}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs, config.audioTimeoutMs) + 15_000 });
+}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs, config.audioTimeoutMs, config.mediaTimeoutMs) + 15_000 });
 
 worker.on("error", (error) => console.error("worker error", error.message));
 const shutdown = async () => { await worker.close(); await browser.close(); await connection.quit(); process.exit(0); };

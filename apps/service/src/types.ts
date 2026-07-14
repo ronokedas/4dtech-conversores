@@ -42,6 +42,34 @@ export type QrCodeJob = {
   originalName: string;
   createdAt: number;
 };
+export type TextPdfJob = {
+  token: string;
+  type: "txt-pdf" | "markdown-pdf";
+  inputPath: string;
+  originalName: string;
+  title?: string;
+  fontSize: number;
+  createdAt: number;
+};
+export type ImageUtilityJob = {
+  token: string;
+  type: "compress-image" | "resize-image" | "convert-image";
+  inputPath: string;
+  originalName: string;
+  quality: number;
+  width?: number;
+  height?: number;
+  format?: "jpeg" | "png" | "webp";
+  createdAt: number;
+};
+export type VideoMp3Job = {
+  token: string;
+  type: "video-mp3";
+  inputPath: string;
+  originalName: string;
+  bitrate: "96k" | "128k" | "192k" | "256k";
+  createdAt: number;
+};
 export type OfficeJob = {
   token: string;
   type: "word" | "excel" | "pdf-word" | "pdf-excel";
@@ -76,7 +104,7 @@ export type PdfUtilityJob = {
   fontSize?: number;
   createdAt: number;
 };
-export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | QrCodeJob | OfficeJob | EditPdfJob | PdfUtilityJob;
+export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | QrCodeJob | TextPdfJob | ImageUtilityJob | VideoMp3Job | OfficeJob | EditPdfJob | PdfUtilityJob;
 
 export type JobRecord = {
   status: JobStatus;

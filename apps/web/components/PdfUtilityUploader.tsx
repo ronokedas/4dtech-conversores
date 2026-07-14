@@ -105,7 +105,7 @@ export function PdfUtilityUploader({ endpoint, accept, allowedExtensions, multip
       </label>)}
     </div> : null}
     {error ? <p className="form-error" role="alert">{error}</p> : null}
-    <button className="button primary convert-button" disabled={busy}>{busy ? <><span className="spinner" /> {busyText}</> : <><Upload size={18} /> {buttonText} <ArrowRight size={19} /></>}</button>
+    <button type="submit" className="button primary convert-button" disabled={busy}>{busy ? <><span className="spinner" /> {busyText}</> : <><Upload size={18} /> {buttonText} <ArrowRight size={19} /></>}</button>
     <p className="privacy-note"><LockKeyhole size={15} aria-hidden="true" /> {privacyText}</p>
   </form>;
 }
