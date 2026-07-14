@@ -1,43 +1,47 @@
 import type { Metadata } from "next";
-import { CheckCircle2, Download, QrCode } from "lucide-react";
 import { QrCodeForm } from "@/components/QrCodeForm";
 import { RelatedTools } from "@/components/RelatedTools";
+import { SeoSections } from "@/components/SeoSections";
 import { ToolIcon } from "@/components/ToolIcon";
 import { getToolBySlug } from "@/lib/tools";
 
 const tool = getToolBySlug("qr-code")!;
 
 export const metadata: Metadata = {
-  title: tool.seoTitle,
-  description: tool.seoDescription,
+  title: "Gerador de QR Code online grátis | Baixar PNG",
+  description: "Crie QR Code online para link, texto, WhatsApp, cardápio, evento ou rede social. Personalize tamanho e cor e baixe em PNG.",
   alternates: { canonical: tool.href },
 };
 
 export default function QrCodePage() {
   return <article className="container tool-page">
-    <nav className="breadcrumb" aria-label="Navegacao estrutural"><a href="/">Inicio</a><span>›</span><a href="/ferramentas">Ferramentas</a><span>›</span><span>{tool.title}</span></nav>
+    <nav className="breadcrumb" aria-label="Navegação estrutural"><a href="/">Início</a><span>›</span><a href="/ferramentas">Ferramentas</a><span>›</span><span>{tool.title}</span></nav>
     <div className="tool-layout">
       <div>
         <header className="tool-header">
           <ToolIcon tool={tool} />
-          <div><h1>{tool.title}</h1><p>{tool.longDescription}</p></div>
+          <div><h1>{tool.title}</h1><p>Digite um link ou texto, personalize tamanho e cor, e baixe seu QR Code em PNG pronto para usar.</p></div>
         </header>
         <QrCodeForm />
-        <section className="tool-content">
-          <div>
-            <h2>Como criar QR Code online</h2>
-            <div className="mini-steps">
-              <span><QrCode /> Digite o link ou texto</span>
-              <span><CheckCircle2 /> Escolha tamanho e cor</span>
-              <span><Download /> Baixe em PNG</span>
-            </div>
-          </div>
-          <div>
-            <h2>Quando usar esta ferramenta?</h2>
-            <p>Use para criar QR Code de site, WhatsApp, cardapio, cupom, endereco, rede social, evento ou qualquer texto curto. O PNG pode ser usado em cartazes, etiquetas, documentos e publicacoes digitais.</p>
-            <p>Para melhor leitura, prefira links curtos e mantenha bom contraste entre a cor do QR Code e o fundo branco.</p>
-          </div>
-        </section>
+        <SeoSections
+          intro={{
+            title: "Crie QR Code para links, textos e materiais impressos",
+            body: "O gerador de QR Code facilita compartilhar URLs, contatos, cardápios, cupons, redes sociais, eventos e textos curtos em uma imagem PNG.",
+          }}
+          howTo={[
+            "Digite o link, texto ou informação que será aberta pelo QR Code.",
+            "Escolha o tamanho e a cor da imagem.",
+            "Clique em Gerar QR Code.",
+            "Baixe o PNG e teste com a câmera do celular antes de imprimir.",
+          ]}
+          privacy="O conteúdo informado é usado apenas para gerar a imagem do QR Code. O arquivo final é temporário e o link de download expira automaticamente."
+          tips={[
+            "Use links curtos para gerar QR Codes mais simples e fáceis de ler.",
+            "Mantenha bom contraste entre a cor do QR Code e o fundo.",
+            "Teste o código em mais de um celular antes de usar em cartazes ou embalagens.",
+            "Evite colocar informações sensíveis em QR Codes públicos.",
+          ]}
+        />
       </div>
       <RelatedTools activeSlug={tool.slug} />
     </div>
