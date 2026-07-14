@@ -7,6 +7,7 @@ import { convert, launchBrowser } from "./convert.js";
 import { editPdf } from "./edit-pdf.js";
 import { convertExcelToPdf, convertPdfToExcel, convertPdfToWord, convertWordToPdf } from "./office.js";
 import { compressPdf, imageToPdf, mergePdfs, organizePdf, outputName, pdfToJpg, protectPdf, signPdf, splitPdf, unlockPdf } from "./pdf-tools.js";
+import { transcribeAudio } from "./transcription.js";
 import { bullConnection, connection, setRecord } from "./redis.js";
 import type { ConversionJob } from "./types.js";
 
@@ -26,6 +27,13 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
       const result = await editPdf(job);
       const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "pdf-editado";
       await setRecord(job.token, { status: "ready", filename: `${base}-editado.pdf`, size: result.size, mimeType: "application/pdf", outputFile: "output.pdf", tool: "edit-pdf", updatedAt: Date.now() });
+      return { size: result.size };
+    }
+
+    if (job.type === "audio-text") {
+      const result = await transcribeAudio(job);
+      const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "transcricao";
+      await setRecord(job.token, { status: "ready", filename: `${base}-transcricao.txt`, size: result.size, mimeType: "text/plain; charset=utf-8", outputFile: "output.txt", tool: "audio-text", updatedAt: Date.now() });
       return { size: result.size };
     }
 
@@ -90,12 +98,13 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
       fs.rm(path.join(config.jobDir, job.token, "output.docx"), { force: true }),
       fs.rm(path.join(config.jobDir, job.token, "output.xlsx"), { force: true }),
       fs.rm(path.join(config.jobDir, job.token, "output.zip"), { force: true }),
+      fs.rm(path.join(config.jobDir, job.token, "output.txt"), { force: true }),
     ]);
     const message = error instanceof Error ? error.message : "Nao foi possivel processar este arquivo.";
     await setRecord(job.token, { status: "failed", error: message.slice(0, 240), updatedAt: Date.now() });
     throw error;
   }
-}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs) + 15_000 });
+}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs, config.audioTimeoutMs) + 15_000 });
 
 worker.on("error", (error) => console.error("worker error", error.message));
 const shutdown = async () => { await worker.close(); await browser.close(); await connection.quit(); process.exit(0); };

@@ -24,6 +24,14 @@ export type BackgroundJob = {
   originalName: string;
   createdAt: number;
 };
+export type AudioTextJob = {
+  token: string;
+  type: "audio-text";
+  inputPath: string;
+  originalName: string;
+  language: "pt" | "en" | "es" | "auto";
+  createdAt: number;
+};
 export type OfficeJob = {
   token: string;
   type: "word" | "excel" | "pdf-word" | "pdf-excel";
@@ -58,7 +66,7 @@ export type PdfUtilityJob = {
   fontSize?: number;
   createdAt: number;
 };
-export type ConversionJob = PdfConversionJob | BackgroundJob | OfficeJob | EditPdfJob | PdfUtilityJob;
+export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | OfficeJob | EditPdfJob | PdfUtilityJob;
 
 export type JobRecord = {
   status: JobStatus;

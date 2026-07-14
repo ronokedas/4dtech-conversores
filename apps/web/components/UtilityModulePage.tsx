@@ -18,7 +18,7 @@ type Props = {
   buttonText: string;
   busyText: string;
   privacyText: string;
-  icon?: "pdf" | "image";
+  icon?: "pdf" | "image" | "audio";
   fields?: UtilityField[];
   children: React.ReactNode;
 };

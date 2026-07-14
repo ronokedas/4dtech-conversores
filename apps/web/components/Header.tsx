@@ -9,6 +9,7 @@ import { ToolIcon } from "./ToolIcon";
 const groups = [
   { title: "PDF", tools: tools.filter((tool) => tool.category === "pdf") },
   { title: "Imagem", tools: tools.filter((tool) => tool.category === "imagem") },
+  { title: "Áudio", tools: tools.filter((tool) => tool.category === "audio") },
   { title: "Conversores", tools: tools.filter((tool) => tool.category === "conversores") },
 ];
 
@@ -34,6 +35,7 @@ export function Header() {
       </div>
       <Link href="/ferramentas#pdf" onClick={() => setOpen(false)}>PDF <ChevronDown size={15} /></Link>
       <Link href="/ferramentas#imagem" onClick={() => setOpen(false)}>Imagem <ChevronDown size={15} /></Link>
+      <Link href="/transcrever-audio-em-texto" onClick={() => setOpen(false)}>Áudio</Link>
       <Link href="/como-funciona" onClick={() => setOpen(false)}>Como funciona</Link>
       <Link href="/duvidas" onClick={() => setOpen(false)}>Duvidas</Link>
       <Link className="nav-cta" href="/ferramentas" onClick={() => setOpen(false)}>Comecar agora</Link>

@@ -1,5 +1,5 @@
 const faqs = [
-  ["Quais ferramentas estão disponíveis?", "Você pode converter HTML/URL para PDF, remover fundo de imagem, converter Word e Excel para PDF, transformar PDF em Word/Excel/JPG, editar, assinar, proteger, comprimir, juntar, dividir e organizar PDFs."],
+  ["Quais ferramentas estão disponíveis?", "Você pode transcrever áudio em texto, converter HTML/URL para PDF, remover fundo de imagem, converter Word e Excel para PDF, transformar PDF em Word/Excel/JPG, editar, assinar, proteger, comprimir, juntar, dividir e organizar PDFs."],
   ["Preciso criar conta para usar?", "Não. O serviço é gratuito, online e sem cadastro. Você escolhe a ferramenta, envia o arquivo e baixa o resultado quando estiver pronto."],
   ["O que acontece com meus arquivos?", "Eles são usados somente durante o processamento e apagados depois que o download termina. Se você não baixar, a limpeza automática acontece em até uma hora."],
   ["Existe limite de tamanho?", "Sim. Em geral, documentos podem ter até 25 MB por envio. Imagens para remoção de fundo têm limite de 15 MB. PDFs finais muito grandes podem ser recusados para manter o serviço estável."],

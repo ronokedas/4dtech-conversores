@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, Download, FileImage, FileText, RefreshCw, TriangleAlert } from "lucide-react";
+import { Check, Download, FileImage, FileText, Mic, RefreshCw, TriangleAlert } from "lucide-react";
 import { AdSlot } from "./AdSlot";
 
 type Status = { status: "queued" | "processing" | "ready" | "failed" | "expired"; filename?: string; size?: number; mimeType?: string; tool?: string; error?: string };
@@ -12,6 +12,7 @@ export function DownloadStatus({ token }: { token: string }) {
   const apiBase = process.env.NEXT_PUBLIC_API_BASE || "/api";
   const isImage = data.tool === "background" || data.mimeType === "image/png";
   const isZip = data.tool === "pdf-jpg" || data.mimeType === "application/zip";
+  const isText = data.tool === "audio-text" || data.mimeType?.startsWith("text/plain");
   const isWord = data.tool === "word";
   const isExcel = data.tool === "excel";
   const isPdfWord = data.tool === "pdf-word";
@@ -33,6 +34,7 @@ export function DownloadStatus({ token }: { token: string }) {
     "protect-pdf": "/proteger-pdf",
     "unlock-pdf": "/remover-senha-pdf",
     "organize-pdf": "/organizar-pdf",
+    "audio-text": "/transcrever-audio-em-texto",
   };
   const anotherHref = data.tool ? toolRoute[data.tool] || "/html-para-pdf" : "/html-para-pdf";
   const copy = useMemo(() => {
@@ -83,6 +85,13 @@ export function DownloadStatus({ token }: { token: string }) {
       successTitle = "Suas imagens estao prontas";
       downloadText = "Baixar ZIP";
       helpText = "Descompacte o ZIP para acessar as imagens JPG geradas a partir das paginas do PDF.";
+    } else if (isText) {
+      processingTitle = "Estamos transcrevendo seu audio";
+      processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Convertendo fala em texto...";
+      successTitle = "Sua transcricao esta pronta";
+      downloadText = "Baixar TXT";
+      anotherText = "Transcrever outro audio";
+      helpText = "Abra o TXT, revise nomes proprios e pontuacao, e copie o texto para seu documento final.";
     }
 
     return {
@@ -96,7 +105,7 @@ export function DownloadStatus({ token }: { token: string }) {
       helpTitle: "Depois de baixar",
       helpText,
     };
-  }, [anotherHref, data.status, isImage, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip]);
+  }, [anotherHref, data.status, isImage, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip, isText]);
 
   useEffect(() => {
     let active = true; let timer: ReturnType<typeof setTimeout>;
@@ -113,6 +122,6 @@ export function DownloadStatus({ token }: { token: string }) {
 
   if (["queued", "processing"].includes(data.status)) return <section className="download-state" aria-live="polite"><div className="status-icon processing"><span className="spinner large" /></div><h1>{copy.processingTitle}</h1><p>{copy.processingText}</p><div className="progress"><span /></div><small>{copy.processingSmall}</small></section>;
   if (data.status === "failed" || data.status === "expired") return <section className="download-state" aria-live="assertive"><div className="status-icon error"><TriangleAlert /></div><h1>{data.status === "expired" ? "Este arquivo expirou" : "Nao foi possivel processar"}</h1><p>{data.error || "O arquivo nao esta mais disponivel. Faca uma nova tentativa."}</p><Link href={anotherHref} className="button primary"><RefreshCw size={18}/> Tentar novamente</Link></section>;
-  const Icon = isImage || isZip ? FileImage : FileText;
+  const Icon = isText ? Mic : (isImage || isZip ? FileImage : FileText);
   return <><section className="download-state success" aria-live="polite"><div className="status-icon success"><Check /></div><h1>{copy.successTitle}</h1><p>O arquivo sera apagado do servidor depois que o download terminar.</p><div className="file-row"><Icon aria-hidden="true"/><div><strong>{data.filename}</strong><span>{formatSize(data.size)}</span></div></div><a className="button primary download-button" href={`${apiBase}/conversions/${token}/download`}><Download size={19}/> {copy.downloadText}</a><Link className="button secondary" href={copy.anotherHref}><RefreshCw size={17}/> {copy.anotherText}</Link></section><div className="download-ad-separator"><AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT}/></div><section className="download-help"><h2>{copy.helpTitle}</h2><p>{copy.helpText}</p><Link href="/ferramentas">Ver outras ferramentas</Link></section></>;
 }

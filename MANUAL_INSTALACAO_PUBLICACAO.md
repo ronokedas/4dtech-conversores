@@ -268,6 +268,9 @@ MAX_PDF_MB=50
 CONVERSION_TIMEOUT_MS=45000
 MAX_IMAGE_UPLOAD_MB=15
 IMAGE_TIMEOUT_MS=60000
+MAX_AUDIO_UPLOAD_MB=50
+AUDIO_TIMEOUT_MS=900000
+WHISPER_MODEL=tiny
 WORKER_CONCURRENCY=2
 
 RATE_LIMIT_10_MINUTES=300
@@ -731,6 +734,7 @@ Antes de mandar tráfego para o site, confira:
 - [ ] `https://documentosonline.com.br/ads.txt` abre.
 - [ ] Conversor HTML para PDF funciona.
 - [ ] Remover fundo funciona.
+- [ ] Transcrever áudio em texto funciona.
 - [ ] Comprimir PDF funciona.
 - [ ] Juntar PDF funciona.
 - [ ] Dividir PDF funciona.
@@ -751,6 +755,7 @@ Antes de mandar tráfego para o site, confira:
 /ferramentas
 /html-para-pdf
 /remover-fundo-de-imagem
+/transcrever-audio-em-texto
 /word-para-pdf
 /excel-para-pdf
 /pdf-para-excel
@@ -1141,7 +1146,63 @@ NEXT_PUBLIC_API_BASE=https://api.documentosonline.com.br
 
 Para o seu caso, não mude.
 
-### 24.3 AdSense
+### 24.3 Transcrição de áudio
+
+Variáveis:
+
+```env
+MAX_AUDIO_UPLOAD_MB=50
+AUDIO_TIMEOUT_MS=900000
+WHISPER_MODEL=tiny
+```
+
+#### `MAX_AUDIO_UPLOAD_MB`
+
+Tamanho máximo do arquivo enviado no módulo **Transcrever áudio em texto**.
+
+Obrigatório?
+
+```txt
+Não precisa mudar. O padrão de 50 MB é suficiente para começar.
+```
+
+#### `AUDIO_TIMEOUT_MS`
+
+Tempo máximo que a transcrição pode ficar processando antes de ser cancelada.
+
+Exemplo:
+
+```env
+AUDIO_TIMEOUT_MS=900000
+```
+
+Isso equivale a 15 minutos.
+
+Obrigatório?
+
+```txt
+Não precisa mudar no início.
+```
+
+#### `WHISPER_MODEL`
+
+Modelo de transcrição usado pelo serviço interno.
+
+Recomendado para VPS com 2 cores e 4 GB de RAM:
+
+```env
+WHISPER_MODEL=tiny
+```
+
+O modelo `tiny` é mais leve e rápido. Modelos maiores podem melhorar a qualidade, mas consomem mais memória, CPU e tempo. Para publicar primeiro sem travar a VPS, comece com `tiny`.
+
+Observação:
+
+```txt
+Na primeira transcrição, o Docker pode demorar um pouco mais porque baixa/prepara o modelo.
+```
+
+### 24.4 AdSense
 
 Variáveis:
 
@@ -1305,6 +1366,9 @@ HOST_PORT=8090
 HTTPS_PORT=8443
 HTTPS_UDP_PORT=8443
 NEXT_PUBLIC_API_BASE=/api
+MAX_AUDIO_UPLOAD_MB=50
+AUDIO_TIMEOUT_MS=900000
+WHISPER_MODEL=tiny
 
 TURNSTILE_SITE_KEY=
 TURNSTILE_SECRET_KEY=
@@ -1327,6 +1391,9 @@ HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
 NEXT_PUBLIC_API_BASE=/api
+MAX_AUDIO_UPLOAD_MB=50
+AUDIO_TIMEOUT_MS=900000
+WHISPER_MODEL=tiny
 
 TURNSTILE_SITE_KEY=0x4AAAA...
 TURNSTILE_SECRET_KEY=0x4AAAA_SECRET...

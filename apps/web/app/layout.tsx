@@ -11,11 +11,11 @@ const brand = "Documentos Online - 4D Tech";
 export const metadata: Metadata = {
   metadataBase: new URL(origin),
   title: { default: `${brand} | Ferramentas online para documentos e imagens`, template: `%s | ${brand}` },
-  description: "Ferramentas online para converter HTML em PDF, remover fundo de imagem e acessar modulos para Word, Excel e PDF.",
+  description: "Ferramentas online para converter HTML em PDF, transcrever audio, remover fundo de imagem e acessar modulos para Word, Excel e PDF.",
   applicationName: brand,
   alternates: { canonical: "/" },
-  openGraph: { type: "website", locale: "pt_BR", siteName: brand, title: "Ferramentas online para documentos e imagens", description: "Converta documentos, trabalhe com PDF e remova fundo de imagem online." },
-  twitter: { card: "summary", title: brand, description: "Ferramentas online para documentos, PDF e imagens." },
+  openGraph: { type: "website", locale: "pt_BR", siteName: brand, title: "Ferramentas online para documentos e imagens", description: "Converta documentos, transcreva audio, trabalhe com PDF e remova fundo de imagem online." },
+  twitter: { card: "summary", title: brand, description: "Ferramentas online para documentos, audio, PDF e imagens." },
   robots: { index: true, follow: true },
 };
 

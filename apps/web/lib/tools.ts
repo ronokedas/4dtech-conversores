@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
-import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Sheet } from "lucide-react";
+import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Mic, Sheet } from "lucide-react";
 
-export type ToolCategory = "pdf" | "imagem" | "conversores";
+export type ToolCategory = "pdf" | "imagem" | "conversores" | "audio";
 
 export type ToolDefinition = {
   slug: string;
@@ -13,12 +13,26 @@ export type ToolDefinition = {
   status: "available" | "soon";
   category: ToolCategory;
   icon: LucideIcon;
-  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit";
+  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit" | "audio";
   seoTitle: string;
   seoDescription: string;
 };
 
 export const tools: ToolDefinition[] = [
+  {
+    slug: "transcrever-audio-em-texto",
+    title: "Transcrever áudio em texto",
+    shortTitle: "Áudio para texto",
+    description: "Transforme áudio ou vídeo curto em texto editável.",
+    longDescription: "Envie MP3, WAV, M4A, OGG, WEBM ou MP4 e receba uma transcrição em TXT para copiar, revisar ou salvar.",
+    href: "/transcrever-audio-em-texto",
+    status: "available",
+    category: "audio",
+    icon: Mic,
+    accent: "audio",
+    seoTitle: "Transcrever áudio em texto online",
+    seoDescription: "Transcreva áudio em texto online e baixe a transcrição em TXT sem instalar programas.",
+  },
   {
     slug: "html-para-pdf",
     title: "HTML para PDF",

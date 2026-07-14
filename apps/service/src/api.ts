@@ -190,6 +190,45 @@ app.post("/conversions/background", async (request, reply) => {
   }
 });
 
+app.post("/conversions/audio-text", async (request, reply) => {
+  const ip = await enforceRateLimit(request);
+  const token = crypto.randomBytes(24).toString("base64url");
+  const dir = await makeJobDir(token);
+  let inputPath = "";
+  let originalName = "";
+  const fields: Record<string, string> = {};
+  try {
+    for await (const part of request.parts()) {
+      if (part.type === "file") {
+        if (inputPath) throw Object.assign(new Error("Envie apenas um arquivo de audio ou video."), { statusCode: 400 });
+        originalName = path.basename(part.filename || "audio.mp3");
+        const ext = path.extname(originalName).toLowerCase();
+        if (![".mp3", ".wav", ".m4a", ".ogg", ".webm", ".mp4", ".mpeg", ".mpga"].includes(ext)) throw Object.assign(new Error("Use MP3, WAV, M4A, OGG, WEBM ou MP4."), { statusCode: 400 });
+        inputPath = path.join(dir, `input${ext}`);
+        await pipeline(part.file, createWriteStream(inputPath, { flags: "wx", mode: 0o640 }));
+        if (part.file.truncated) throw Object.assign(new Error("O arquivo ultrapassa o limite de tamanho."), { statusCode: 413 });
+        const stat = await fs.stat(inputPath);
+        if (stat.size > config.maxAudioUploadBytes) throw Object.assign(new Error("O arquivo deve ter no maximo 50 MB."), { statusCode: 413 });
+      } else {
+        fields[part.fieldname] = String(part.value).slice(0, 500);
+      }
+    }
+    if (!inputPath) throw Object.assign(new Error("Selecione um audio ou video curto."), { statusCode: 400 });
+    if (!(await verifyTurnstile(fields.turnstileToken, ip, config.turnstileSecret))) {
+      throw Object.assign(new Error("Nao foi possivel validar o desafio de seguranca."), { statusCode: 403 });
+    }
+    const rawLanguage = fields.language || "pt";
+    const language = ["pt", "en", "es", "auto"].includes(rawLanguage) ? rawLanguage as "pt" | "en" | "es" | "auto" : "pt";
+    const job: ConversionJob = { token, type: "audio-text", inputPath, originalName, language, createdAt: Date.now() };
+    await setRecord(token, { status: "queued", tool: "audio-text", updatedAt: Date.now() });
+    await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+    return reply.code(202).send({ token });
+  } catch (error) {
+    await fs.rm(dir, { recursive: true, force: true });
+    throw error;
+  }
+});
+
 app.post("/conversions/word", async (request, reply) => {
   const ip = await enforceRateLimit(request);
   const token = crypto.randomBytes(24).toString("base64url");

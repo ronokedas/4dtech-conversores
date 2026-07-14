@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
-import { ArrowRight, FileImage, FileText, LockKeyhole, Upload } from "lucide-react";
+import { ArrowRight, FileImage, FileText, LockKeyhole, Mic, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export type UtilityField = {
@@ -28,7 +28,7 @@ type Props = {
   buttonText: string;
   busyText: string;
   privacyText: string;
-  icon?: "pdf" | "image";
+  icon?: "pdf" | "image" | "audio";
   fields?: UtilityField[];
 };
 
@@ -87,7 +87,7 @@ export function PdfUtilityUploader({ endpoint, accept, allowedExtensions, multip
 
   const selectedLabel = files.length > 1 ? `${files.length} arquivos selecionados` : files[0]?.name;
   const selectedSize = files.reduce((sum, file) => sum + file.size, 0);
-  const Icon = icon === "image" ? FileImage : FileText;
+  const Icon = icon === "image" ? FileImage : (icon === "audio" ? Mic : FileText);
 
   return <form className="image-tool" onSubmit={submit} aria-busy={busy}>
     <div className={`image-dropzone ${dragging ? "dragging" : ""} ${files.length ? "selected" : ""}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); chooseFiles(event.dataTransfer.files); }}>

@@ -46,8 +46,11 @@ services:
       MAX_PDF_MB: ${MAX_PDF_MB:-50}
       CONVERSION_TIMEOUT_MS: ${CONVERSION_TIMEOUT_MS:-45000}
       IMAGE_TIMEOUT_MS: ${IMAGE_TIMEOUT_MS:-60000}
+      AUDIO_TIMEOUT_MS: ${AUDIO_TIMEOUT_MS:-900000}
       MAX_IMAGE_UPLOAD_MB: ${MAX_IMAGE_UPLOAD_MB:-15}
+      MAX_AUDIO_UPLOAD_MB: ${MAX_AUDIO_UPLOAD_MB:-50}
       BACKGROUND_SERVICE_URL: http://background:5000
+      TRANSCRIPTION_SERVICE_URL: http://transcriber:5100
       RATE_LIMIT_10_MINUTES: ${RATE_LIMIT_10_MINUTES:-300}
       RATE_LIMIT_HOUR: ${RATE_LIMIT_HOUR:-2000}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
@@ -59,6 +62,8 @@ services:
       jobs-init:
         condition: service_completed_successfully
       background:
+        condition: service_healthy
+      transcriber:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
@@ -85,6 +90,8 @@ services:
         condition: service_completed_successfully
       background:
         condition: service_healthy
+      transcriber:
+        condition: service_healthy
     restart: unless-stopped
     shm_size: "1gb"
     security_opt:
@@ -104,6 +111,25 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=3).read()"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+  transcriber:
+    build:
+      context: .
+      dockerfile: apps/transcriber/Dockerfile
+    environment:
+      WHISPER_MODEL: ${WHISPER_MODEL:-tiny}
+      WHISPER_DEVICE: cpu
+      WHISPER_COMPUTE_TYPE: int8
+      WHISPER_MODEL_DIR: /models
+    volumes:
+      - transcription_models:/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5100/health', timeout=3).read()"]
       interval: 20s
       timeout: 5s
       retries: 10
@@ -154,3 +180,4 @@ volumes:
   caddy_data:
   caddy_config:
   background_models:
+  transcription_models:
