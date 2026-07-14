@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Mic, Sheet } from "lucide-react";
+import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Mic, QrCode, Sheet } from "lucide-react";
 
 export type ToolCategory = "pdf" | "imagem" | "conversores" | "audio";
 
@@ -13,7 +13,7 @@ export type ToolDefinition = {
   status: "available" | "soon";
   category: ToolCategory;
   icon: LucideIcon;
-  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit" | "audio";
+  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit" | "audio" | "qr";
   seoTitle: string;
   seoDescription: string;
 };
@@ -32,6 +32,20 @@ export const tools: ToolDefinition[] = [
     accent: "audio",
     seoTitle: "Transcrever áudio em texto online",
     seoDescription: "Transcreva áudio em texto online e baixe a transcrição em TXT sem instalar programas.",
+  },
+  {
+    slug: "qr-code",
+    title: "Gerador de QR Code",
+    shortTitle: "QR Code",
+    description: "Crie QR Code para links, textos, contatos e informacoes.",
+    longDescription: "Digite um link ou texto e gere um QR Code em PNG, pronto para imprimir, compartilhar ou usar em materiais digitais.",
+    href: "/qr-code",
+    status: "available",
+    category: "conversores",
+    icon: QrCode,
+    accent: "qr",
+    seoTitle: "Gerador de QR Code online",
+    seoDescription: "Crie QR Code online gratis para links e textos e baixe em PNG sem instalar programas.",
   },
   {
     slug: "html-para-pdf",

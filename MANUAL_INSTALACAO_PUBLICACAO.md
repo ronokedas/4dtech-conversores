@@ -735,6 +735,7 @@ Antes de mandar tráfego para o site, confira:
 - [ ] Conversor HTML para PDF funciona.
 - [ ] Remover fundo funciona.
 - [ ] Transcrever áudio em texto funciona.
+- [ ] Gerador de QR Code funciona.
 - [ ] Comprimir PDF funciona.
 - [ ] Juntar PDF funciona.
 - [ ] Dividir PDF funciona.
@@ -756,6 +757,7 @@ Antes de mandar tráfego para o site, confira:
 /html-para-pdf
 /remover-fundo-de-imagem
 /transcrever-audio-em-texto
+/qr-code
 /word-para-pdf
 /excel-para-pdf
 /pdf-para-excel

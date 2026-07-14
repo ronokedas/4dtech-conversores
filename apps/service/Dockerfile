@@ -13,21 +13,19 @@ FROM node:22-bookworm-slim AS api
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/service/node_modules ./node_modules
 COPY --from=build /app/apps/service/dist ./dist
 RUN mkdir -p /data/jobs && chown -R node:node /data/jobs /app
 USER node
 EXPOSE 4000
 CMD ["node", "dist/api.js"]
 
-FROM mcr.microsoft.com/playwright:v1.55.0-noble AS worker
+FROM mcr.microsoft.com/playwright:v1.55.1-noble AS worker
 ENV NODE_ENV=production
 WORKDIR /app
 RUN apt-get update \
   && apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc libreoffice-core poppler-utils ghostscript qpdf zip fonts-dejavu fonts-liberation \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/service/node_modules ./node_modules
 COPY --from=build /app/apps/service/dist ./dist
 RUN mkdir -p /data/jobs && chown -R pwuser:pwuser /data/jobs /app
 USER pwuser

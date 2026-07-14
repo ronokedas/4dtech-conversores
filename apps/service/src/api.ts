@@ -229,6 +229,29 @@ app.post("/conversions/audio-text", async (request, reply) => {
   }
 });
 
+app.post("/conversions/qr-code", async (request, reply) => {
+  const ip = await enforceRateLimit(request);
+  const body = request.body as Record<string, unknown> | null;
+  const content = typeof body?.content === "string" ? body.content.trim() : "";
+  if (!content) throw Object.assign(new Error("Digite o texto ou link para gerar o QR Code."), { statusCode: 400 });
+  if (content.length > 2000) throw Object.assign(new Error("O conteudo do QR Code deve ter no maximo 2000 caracteres."), { statusCode: 413 });
+  if (!(await verifyTurnstile(typeof body?.turnstileToken === "string" ? body.turnstileToken : undefined, ip, config.turnstileSecret))) {
+    throw Object.assign(new Error("Nao foi possivel validar o desafio de seguranca."), { statusCode: 403 });
+  }
+  const token = crypto.randomBytes(24).toString("base64url");
+  await makeJobDir(token);
+  const rawSize = Number(body?.size);
+  const rawMargin = Number(body?.margin);
+  const rawColor = typeof body?.darkColor === "string" ? body.darkColor.trim() : "#111827";
+  const size = Number.isFinite(rawSize) ? Math.max(256, Math.min(1200, Math.round(rawSize))) : 768;
+  const margin = Number.isFinite(rawMargin) ? Math.max(1, Math.min(8, Math.round(rawMargin))) : 3;
+  const darkColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? `${rawColor}ff` : "#111827ff";
+  const job: ConversionJob = { token, type: "qr-code", content, size, margin, darkColor, originalName: "qr-code", createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "qr-code", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
 app.post("/conversions/word", async (request, reply) => {
   const ip = await enforceRateLimit(request);
   const token = crypto.randomBytes(24).toString("base64url");

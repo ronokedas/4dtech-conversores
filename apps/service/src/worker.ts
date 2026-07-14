@@ -7,6 +7,7 @@ import { convert, launchBrowser } from "./convert.js";
 import { editPdf } from "./edit-pdf.js";
 import { convertExcelToPdf, convertPdfToExcel, convertPdfToWord, convertWordToPdf } from "./office.js";
 import { compressPdf, imageToPdf, mergePdfs, organizePdf, outputName, pdfToJpg, protectPdf, signPdf, splitPdf, unlockPdf } from "./pdf-tools.js";
+import { generateQrCode } from "./qr-code.js";
 import { transcribeAudio } from "./transcription.js";
 import { bullConnection, connection, setRecord } from "./redis.js";
 import type { ConversionJob } from "./types.js";
@@ -34,6 +35,12 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
       const result = await transcribeAudio(job);
       const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "transcricao";
       await setRecord(job.token, { status: "ready", filename: `${base}-transcricao.txt`, size: result.size, mimeType: "text/plain; charset=utf-8", outputFile: "output.txt", tool: "audio-text", updatedAt: Date.now() });
+      return { size: result.size };
+    }
+
+    if (job.type === "qr-code") {
+      const result = await generateQrCode(job);
+      await setRecord(job.token, { status: "ready", filename: "qr-code.png", size: result.size, mimeType: "image/png", outputFile: "output.png", tool: "qr-code", updatedAt: Date.now() });
       return { size: result.size };
     }
 

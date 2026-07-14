@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, Download, FileImage, FileText, Mic, RefreshCw, TriangleAlert } from "lucide-react";
+import { Check, Download, FileImage, FileText, Mic, QrCode, RefreshCw, TriangleAlert } from "lucide-react";
 import { AdSlot } from "./AdSlot";
 
 type Status = { status: "queued" | "processing" | "ready" | "failed" | "expired"; filename?: string; size?: number; mimeType?: string; tool?: string; error?: string };
@@ -10,7 +10,9 @@ const formatSize = (bytes?: number) => bytes ? new Intl.NumberFormat("pt-BR", { 
 export function DownloadStatus({ token }: { token: string }) {
   const [data, setData] = useState<Status>({ status: "queued" });
   const apiBase = process.env.NEXT_PUBLIC_API_BASE || "/api";
-  const isImage = data.tool === "background" || data.mimeType === "image/png";
+  const isBackground = data.tool === "background";
+  const isQrCode = data.tool === "qr-code";
+  const isImage = isBackground || isQrCode || data.mimeType === "image/png";
   const isZip = data.tool === "pdf-jpg" || data.mimeType === "application/zip";
   const isText = data.tool === "audio-text" || data.mimeType?.startsWith("text/plain");
   const isWord = data.tool === "word";
@@ -35,6 +37,7 @@ export function DownloadStatus({ token }: { token: string }) {
     "unlock-pdf": "/remover-senha-pdf",
     "organize-pdf": "/organizar-pdf",
     "audio-text": "/transcrever-audio-em-texto",
+    "qr-code": "/qr-code",
   };
   const anotherHref = data.tool ? toolRoute[data.tool] || "/html-para-pdf" : "/html-para-pdf";
   const copy = useMemo(() => {
@@ -45,7 +48,14 @@ export function DownloadStatus({ token }: { token: string }) {
     let anotherText = "Usar novamente";
     let helpText = "Confira se o arquivo ficou como esperado. Se precisar, volte ao modulo e gere uma nova versao.";
 
-    if (isImage) {
+    if (isQrCode) {
+      processingTitle = "Estamos gerando seu QR Code";
+      processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Criando a imagem PNG...";
+      successTitle = "Seu QR Code esta pronto";
+      downloadText = "Baixar PNG";
+      anotherText = "Gerar outro QR Code";
+      helpText = "Teste o QR Code com a camera do celular antes de imprimir ou compartilhar em grande escala.";
+    } else if (isBackground) {
       processingTitle = "Estamos removendo o fundo";
       processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Processando a imagem...";
       successTitle = "Sua imagem esta pronta";
@@ -96,7 +106,7 @@ export function DownloadStatus({ token }: { token: string }) {
 
     return {
       processingTitle,
-      processingText: isImage ? "Isso pode levar alguns segundos na primeira imagem. Nao feche esta pagina." : "Isso normalmente leva apenas alguns segundos. Nao feche esta pagina.",
+      processingText: isBackground ? "Isso pode levar alguns segundos na primeira imagem. Nao feche esta pagina." : "Isso normalmente leva apenas alguns segundos. Nao feche esta pagina.",
       processingSmall,
       successTitle,
       downloadText,
@@ -105,7 +115,7 @@ export function DownloadStatus({ token }: { token: string }) {
       helpTitle: "Depois de baixar",
       helpText,
     };
-  }, [anotherHref, data.status, isImage, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip, isText]);
+  }, [anotherHref, data.status, isBackground, isQrCode, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip, isText]);
 
   useEffect(() => {
     let active = true; let timer: ReturnType<typeof setTimeout>;
@@ -122,6 +132,6 @@ export function DownloadStatus({ token }: { token: string }) {
 
   if (["queued", "processing"].includes(data.status)) return <section className="download-state" aria-live="polite"><div className="status-icon processing"><span className="spinner large" /></div><h1>{copy.processingTitle}</h1><p>{copy.processingText}</p><div className="progress"><span /></div><small>{copy.processingSmall}</small></section>;
   if (data.status === "failed" || data.status === "expired") return <section className="download-state" aria-live="assertive"><div className="status-icon error"><TriangleAlert /></div><h1>{data.status === "expired" ? "Este arquivo expirou" : "Nao foi possivel processar"}</h1><p>{data.error || "O arquivo nao esta mais disponivel. Faca uma nova tentativa."}</p><Link href={anotherHref} className="button primary"><RefreshCw size={18}/> Tentar novamente</Link></section>;
-  const Icon = isText ? Mic : (isImage || isZip ? FileImage : FileText);
+  const Icon = isText ? Mic : (isQrCode ? QrCode : (isImage || isZip ? FileImage : FileText));
   return <><section className="download-state success" aria-live="polite"><div className="status-icon success"><Check /></div><h1>{copy.successTitle}</h1><p>O arquivo sera apagado do servidor depois que o download terminar.</p><div className="file-row"><Icon aria-hidden="true"/><div><strong>{data.filename}</strong><span>{formatSize(data.size)}</span></div></div><a className="button primary download-button" href={`${apiBase}/conversions/${token}/download`}><Download size={19}/> {copy.downloadText}</a><Link className="button secondary" href={copy.anotherHref}><RefreshCw size={17}/> {copy.anotherText}</Link></section><div className="download-ad-separator"><AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT}/></div><section className="download-help"><h2>{copy.helpTitle}</h2><p>{copy.helpText}</p><Link href="/ferramentas">Ver outras ferramentas</Link></section></>;
 }

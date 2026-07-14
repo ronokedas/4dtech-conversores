@@ -32,6 +32,16 @@ export type AudioTextJob = {
   language: "pt" | "en" | "es" | "auto";
   createdAt: number;
 };
+export type QrCodeJob = {
+  token: string;
+  type: "qr-code";
+  content: string;
+  size: number;
+  margin: number;
+  darkColor: string;
+  originalName: string;
+  createdAt: number;
+};
 export type OfficeJob = {
   token: string;
   type: "word" | "excel" | "pdf-word" | "pdf-excel";
@@ -66,7 +76,7 @@ export type PdfUtilityJob = {
   fontSize?: number;
   createdAt: number;
 };
-export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | OfficeJob | EditPdfJob | PdfUtilityJob;
+export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | QrCodeJob | OfficeJob | EditPdfJob | PdfUtilityJob;
 
 export type JobRecord = {
   status: JobStatus;

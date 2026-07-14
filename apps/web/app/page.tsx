@@ -8,18 +8,18 @@ import { getToolBySlug } from "@/lib/tools";
 
 export const metadata: Metadata = {
   title: "Ferramentas online para documentos e imagens",
-  description: "Converta HTML em PDF, transcreva audio em texto, remova fundo de imagens e acesse ferramentas online para Word, Excel e PDF.",
+  description: "Converta HTML em PDF, transcreva audio em texto, gere QR Code, remova fundo de imagens e acesse ferramentas online para Word, Excel e PDF.",
   alternates: { canonical: "/" },
 };
 
 export default function Home() {
-  const featuredTools = ["html-para-pdf", "transcrever-audio-em-texto", "remover-fundo-de-imagem", "comprimir-pdf", "juntar-pdf"].map((slug) => getToolBySlug(slug)!);
+  const featuredTools = ["html-para-pdf", "qr-code", "transcrever-audio-em-texto", "remover-fundo-de-imagem", "comprimir-pdf", "juntar-pdf"].map((slug) => getToolBySlug(slug)!);
   return <>
     <section className="platform-hero">
       <div className="container platform-hero-inner">
         <div className="platform-copy">
           <h1>Ferramentas online para documentos e imagens.</h1>
-          <p>Converta HTML em PDF, transcreva audio em texto, remova fundo de imagens PNG e acesse modulos exclusivos para Word, Excel e PDF.</p>
+          <p>Converta HTML em PDF, gere QR Code, transcreva audio em texto, remova fundo de imagens PNG e acesse modulos exclusivos para Word, Excel e PDF.</p>
         </div>
         <div className="quick-actions" aria-label="Comece agora">
           <h2>Comece agora</h2>
