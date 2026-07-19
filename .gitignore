@@ -4,6 +4,7 @@ dist/
 .env
 .env.local
 coverage/
+*.tsbuildinfo
 work/
 jobs/
 *.log
