@@ -1,5 +1,14 @@
 services:
+  web:
+    build:
+      args:
+        PUBLIC_ORIGIN: https://www.4dtech.com.br
+    environment:
+      PUBLIC_ORIGIN: https://www.4dtech.com.br
+
   caddy:
     environment:
-      SITE_ADDRESS: ${SITE_ADDRESS}
+      SITE_ADDRESS: www.4dtech.com.br
+      REDIRECT_SITE_ADDRESS: 4dtech.com.br
+      PUBLIC_ORIGIN: https://www.4dtech.com.br
       ACME_EMAIL: ${ACME_EMAIL}

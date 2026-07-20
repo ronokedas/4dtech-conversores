@@ -52,7 +52,7 @@ export function QrCodeForm() {
       <span>PNG</span>
     </div>
     <label className="qr-field">Texto ou link do QR Code
-      <textarea value={content} onChange={(event) => setContent(event.target.value)} maxLength={2000} placeholder="Exemplo: https://seudominio.com.br, WhatsApp, texto, cupom ou endereco" />
+      <textarea value={content} onChange={(event) => setContent(event.target.value)} maxLength={2000} placeholder="Exemplo: https://www.4dtech.com.br, WhatsApp, texto, cupom ou endereco" />
       <small>{content.length}/2000 caracteres</small>
     </label>
     <div className="qr-options">

@@ -21,13 +21,14 @@ Use este checklist antes de colocar o site no ar e antes de enviar para Search C
 Exemplo de produção:
 
 ```env
-SITE_ADDRESS=seudominio.com.br, www.seudominio.com.br
-PUBLIC_ORIGIN=https://seudominio.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
 NEXT_PUBLIC_API_BASE=/api
-ACME_EMAIL=contato@seudominio.com.br
+ACME_EMAIL=contato@4dtech.com.br
 ```
 
 ## 2. Manual
@@ -48,7 +49,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 - [ ] Domínio adicionado na Cloudflare.
 - [ ] Nameservers do domínio apontam para a Cloudflare.
 - [ ] Registro `A` do domínio principal aponta para o IP da VPS.
-- [ ] Registro `www` criado como `CNAME` para o domínio principal, se for usar `www`.
+- [ ] Registro `www` criado como `CNAME` para `4dtech.com.br`.
+- [ ] `https://4dtech.com.br` redireciona permanentemente para `https://www.4dtech.com.br`.
 - [ ] Para a primeira emissão HTTPS, DNS está em `DNS only`.
 - [ ] SSL/TLS da Cloudflare está em `Full` ou `Full (strict)`.
 - [ ] Não usar modo `Flexible`.
@@ -71,9 +73,9 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 Teste no navegador:
 
 ```txt
-https://seudominio.com.br/sitemap.xml
-https://seudominio.com.br/robots.txt
-https://seudominio.com.br/ads.txt
+https://www.4dtech.com.br/sitemap.xml
+https://www.4dtech.com.br/robots.txt
+https://www.4dtech.com.br/ads.txt
 ```
 
 Checklist:
@@ -122,4 +124,3 @@ http://localhost:8090/ads.txt
 - [ ] Páginas `/privacidade` e `/termos` estão revisadas.
 - [ ] Search Console recebeu o sitemap.
 - [ ] AdSense só foi ativado depois da aprovação.
-

@@ -6,6 +6,8 @@ COPY apps/service/package.json apps/service/package.json
 RUN npm install --workspace @html-pdf/web --include-workspace-root
 
 FROM deps AS build
+ARG PUBLIC_ORIGIN=http://localhost:8090
+ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
 COPY apps/web apps/web
 RUN npm run build -w @html-pdf/web
 

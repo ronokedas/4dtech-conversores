@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8090}
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -160,6 +162,8 @@ services:
     image: caddy:2.10-alpine
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:-http://localhost}
+      REDIRECT_SITE_ADDRESS: ${REDIRECT_SITE_ADDRESS:-http://redirect.invalid}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8090}
       ACME_EMAIL: ${ACME_EMAIL:-}
     ports:
       - "${HOST_PORT:-8090}:80"

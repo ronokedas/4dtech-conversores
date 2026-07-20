@@ -9,7 +9,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker compose ps
 ```
 
-Defina `SITE_ADDRESS=seudominio.com.br`. Em produção, remova o mapeamento `8080:80` se ele não for necessário. Mantenha no firewall somente SSH, 80/TCP, 443/TCP e 443/UDP.
+O arquivo `docker-compose.prod.yml` fixa `https://www.4dtech.com.br` como domínio canônico e redireciona `4dtech.com.br` para `www`. Mantenha no firewall somente SSH, 80/TCP, 443/TCP e 443/UDP.
 
 ## AdSense, consentimento e métricas
 

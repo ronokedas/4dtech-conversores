@@ -2,6 +2,10 @@
 	admin off
 }
 
+{$REDIRECT_SITE_ADDRESS:http://redirect.invalid} {
+	redir {$PUBLIC_ORIGIN:http://localhost:8090}{uri} permanent
+}
+
 {$SITE_ADDRESS:http://localhost} {
 	encode zstd gzip
 

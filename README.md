@@ -8,7 +8,7 @@ Conversor publico de arquivos HTML/ZIP e URLs para PDF, com Next.js, Fastify, Re
 2. Execute `docker compose up --build`.
 3. Abra `http://localhost:8090`.
 
-Turnstile, AdSense e Analytics ficam desativados quando suas chaves estão vazias. Antes de publicar, informe `SITE_ADDRESS=seudominio.com.br` no `.env`, aponte o DNS para a VPS e use também o arquivo de produção.
+Turnstile, AdSense e Analytics ficam desativados quando suas chaves estão vazias. Em produção, o domínio canônico é `https://www.4dtech.com.br`; o domínio sem `www` é redirecionado permanentemente. Aponte os dois registros DNS para a VPS e use também o arquivo de produção.
 
 ## Estrutura
 

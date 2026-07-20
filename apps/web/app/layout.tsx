@@ -4,8 +4,9 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ConsentBanner } from "@/components/ConsentBanner";
+import { getPublicOrigin } from "@/lib/site";
 
-const origin = process.env.PUBLIC_ORIGIN ?? "http://localhost:8090";
+const origin = getPublicOrigin();
 const brand = "Documentos Online - 4D Tech";
 
 export const metadata: Metadata = {

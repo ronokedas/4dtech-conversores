@@ -12,7 +12,7 @@ CHECKLIST_PUBLICACAO.md
 
 > Substitua os exemplos abaixo pelo seu domínio, usuário e repositório.
 >
-> Exemplo de domínio usado no manual: `documentosonline.com.br`
+> Exemplo de domínio usado no manual: `www.4dtech.com.br`
 >
 > Repositório atual do projeto: `https://github.com/ronokedas/4dtech-conversores.git`
 
@@ -149,7 +149,7 @@ Se quiser usar `www`:
 ```txt
 Tipo: CNAME
 Nome: www
-Valor: documentosonline.com.br
+Valor: www.4dtech.com.br
 TTL: automático ou 300
 ```
 
@@ -158,7 +158,7 @@ Aguarde a propagação do DNS.
 Teste no seu computador:
 
 ```powershell
-ping documentosonline.com.br
+ping www.4dtech.com.br
 ```
 
 O IP retornado deve ser o IP da VPS.
@@ -256,8 +256,9 @@ nano .env
 Configure assim:
 
 ```env
-SITE_ADDRESS=documentosonline.com.br
-PUBLIC_ORIGIN=https://documentosonline.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
@@ -317,8 +318,9 @@ O Caddy vai gerar HTTPS automático quando:
 Se quiser publicar também com `www`, altere:
 
 ```env
-SITE_ADDRESS=documentosonline.com.br, www.documentosonline.com.br
-PUBLIC_ORIGIN=https://documentosonline.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 ```
 
 ---
@@ -365,25 +367,25 @@ docker compose logs -f api worker
 Abra:
 
 ```txt
-https://documentosonline.com.br
+https://www.4dtech.com.br
 ```
 
 Teste páginas:
 
 ```txt
-https://documentosonline.com.br/ferramentas
-https://documentosonline.com.br/html-para-pdf
-https://documentosonline.com.br/remover-fundo-de-imagem
-https://documentosonline.com.br/comprimir-pdf
-https://documentosonline.com.br/juntar-pdf
+https://www.4dtech.com.br/ferramentas
+https://www.4dtech.com.br/html-para-pdf
+https://www.4dtech.com.br/remover-fundo-de-imagem
+https://www.4dtech.com.br/comprimir-pdf
+https://www.4dtech.com.br/juntar-pdf
 ```
 
 Teste arquivos técnicos:
 
 ```txt
-https://documentosonline.com.br/sitemap.xml
-https://documentosonline.com.br/robots.txt
-https://documentosonline.com.br/ads.txt
+https://www.4dtech.com.br/sitemap.xml
+https://www.4dtech.com.br/robots.txt
+https://www.4dtech.com.br/ads.txt
 ```
 
 Endereço local do sitemap, quando rodando no seu PC:
@@ -395,7 +397,7 @@ http://localhost:8090/sitemap.xml
 Endereço público do sitemap, depois de publicar:
 
 ```txt
-https://documentosonline.com.br/sitemap.xml
+https://www.4dtech.com.br/sitemap.xml
 ```
 
 ---
@@ -411,8 +413,8 @@ O Turnstile ajuda a evitar abuso de upload/conversão.
 5. Adicione seu domínio:
 
 ```txt
-documentosonline.com.br
-www.documentosonline.com.br
+4dtech.com.br
+www.4dtech.com.br
 ```
 
 6. Copie:
@@ -458,10 +460,10 @@ Antes de enviar para aprovação no AdSense, confira:
 Páginas importantes:
 
 ```txt
-https://documentosonline.com.br/privacidade
-https://documentosonline.com.br/termos
-https://documentosonline.com.br/como-funciona
-https://documentosonline.com.br/duvidas
+https://www.4dtech.com.br/privacidade
+https://www.4dtech.com.br/termos
+https://www.4dtech.com.br/como-funciona
+https://www.4dtech.com.br/duvidas
 ```
 
 ### 14.2 Criar conta/site no AdSense
@@ -470,7 +472,7 @@ https://documentosonline.com.br/duvidas
 2. Adicione o site:
 
 ```txt
-documentosonline.com.br
+www.4dtech.com.br
 ```
 
 3. Siga o processo de verificação do Google.
@@ -556,9 +558,9 @@ docker compose up -d --build web
 Teste:
 
 ```txt
-https://documentosonline.com.br
-https://documentosonline.com.br/baixar/ALGUM_TOKEN_VALIDO
-https://documentosonline.com.br/ads.txt
+https://www.4dtech.com.br
+https://www.4dtech.com.br/baixar/ALGUM_TOKEN_VALIDO
+https://www.4dtech.com.br/ads.txt
 ```
 
 O arquivo `ads.txt` é gerado automaticamente com base em:
@@ -581,7 +583,7 @@ google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
 2. Adicione a propriedade do domínio:
 
 ```txt
-documentosonline.com.br
+www.4dtech.com.br
 ```
 
 3. Faça a verificação por DNS, se possível.
@@ -589,13 +591,13 @@ documentosonline.com.br
 5. Envie:
 
 ```txt
-https://documentosonline.com.br/sitemap.xml
+https://www.4dtech.com.br/sitemap.xml
 ```
 
 Também confira:
 
 ```txt
-https://documentosonline.com.br/robots.txt
+https://www.4dtech.com.br/robots.txt
 ```
 
 As páginas temporárias de download e API não devem aparecer no sitemap.
@@ -737,9 +739,9 @@ Antes de mandar tráfego para o site, confira:
 
 - [ ] Domínio aponta para a VPS.
 - [ ] HTTPS funcionando.
-- [ ] `https://documentosonline.com.br/sitemap.xml` abre.
-- [ ] `https://documentosonline.com.br/robots.txt` abre.
-- [ ] `https://documentosonline.com.br/ads.txt` abre.
+- [ ] `https://www.4dtech.com.br/sitemap.xml` abre.
+- [ ] `https://www.4dtech.com.br/robots.txt` abre.
+- [ ] `https://www.4dtech.com.br/ads.txt` abre.
 - [ ] Conversor HTML para PDF funciona.
 - [ ] Remover fundo funciona.
 - [ ] Transcrever áudio em texto funciona.
@@ -836,7 +838,7 @@ Você vai apontar o domínio para o IP público da VPS. Na VPS, o site deve resp
 3. Informe seu domínio, por exemplo:
 
 ```txt
-documentosonline.com.br
+www.4dtech.com.br
 ```
 
 4. Escolha o plano desejado. O plano gratuito costuma ser suficiente para começar.
@@ -870,12 +872,12 @@ Proxy status: DNS only ou Proxied
 TTL: Auto
 ```
 
-Crie também o `www`, se quiser:
+Crie também o `www`, pois ele é o domínio principal do site:
 
 ```txt
 Type: CNAME
 Name: www
-Target: documentosonline.com.br
+Target: 4dtech.com.br
 Proxy status: DNS only ou Proxied
 TTL: Auto
 ```
@@ -938,8 +940,9 @@ ufw status
 No `.env` da VPS, use:
 
 ```env
-SITE_ADDRESS=documentosonline.com.br
-PUBLIC_ORIGIN=https://documentosonline.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
@@ -949,8 +952,9 @@ ACME_EMAIL=seu-email@dominio.com
 Se quiser aceitar `www` também:
 
 ```env
-SITE_ADDRESS=documentosonline.com.br, www.documentosonline.com.br
-PUBLIC_ORIGIN=https://documentosonline.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
@@ -975,8 +979,9 @@ Na VPS você deve usar:
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
-PUBLIC_ORIGIN=https://documentosonline.com.br
-SITE_ADDRESS=documentosonline.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
 ```
 
 Isso faz o Caddy ficar acessível publicamente na porta 80 da VPS. O Caddy então encaminha internamente para os containers `web` e `api`.
@@ -1043,23 +1048,23 @@ HTTPS_UDP_PORT=443
 No seu computador:
 
 ```powershell
-ping documentosonline.com.br
+ping www.4dtech.com.br
 ```
 
 Na VPS:
 
 ```bash
-curl -I http://documentosonline.com.br
-curl -I https://documentosonline.com.br
+curl -I http://www.4dtech.com.br
+curl -I https://www.4dtech.com.br
 ```
 
 No navegador:
 
 ```txt
-https://documentosonline.com.br
-https://documentosonline.com.br/sitemap.xml
-https://documentosonline.com.br/robots.txt
-https://documentosonline.com.br/ads.txt
+https://www.4dtech.com.br
+https://www.4dtech.com.br/sitemap.xml
+https://www.4dtech.com.br/robots.txt
+https://www.4dtech.com.br/ads.txt
 ```
 
 ---
@@ -1161,7 +1166,7 @@ Sim, mas o valor padrão correto é /api.
 Só mude se um dia a API estiver em outro domínio, por exemplo:
 
 ```env
-NEXT_PUBLIC_API_BASE=https://api.documentosonline.com.br
+NEXT_PUBLIC_API_BASE=https://api.4dtech.com.br
 ```
 
 Para o seu caso, não mude.
@@ -1386,7 +1391,7 @@ Esse e-mail é usado pelo Caddy/Let's Encrypt para emitir certificados HTTPS e a
 Exemplo:
 
 ```env
-ACME_EMAIL=contato@documentosonline.com.br
+ACME_EMAIL=contato@4dtech.com.br
 ```
 
 Obrigatório?
@@ -1431,8 +1436,9 @@ ACME_EMAIL=
 ### Produção na VPS com Cloudflare
 
 ```env
-SITE_ADDRESS=documentosonline.com.br, www.documentosonline.com.br
-PUBLIC_ORIGIN=https://documentosonline.com.br
+SITE_ADDRESS=www.4dtech.com.br
+REDIRECT_SITE_ADDRESS=4dtech.com.br
+PUBLIC_ORIGIN=https://www.4dtech.com.br
 HOST_PORT=80
 HTTPS_PORT=443
 HTTPS_UDP_PORT=443
@@ -1450,7 +1456,7 @@ NEXT_PUBLIC_ADSENSE_HOME_SLOT=1111111111
 NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT=2222222222
 NEXT_PUBLIC_GA_ID=G-ABC1234567
 
-ACME_EMAIL=contato@documentosonline.com.br
+ACME_EMAIL=contato@4dtech.com.br
 ```
 
 Lembrete:
