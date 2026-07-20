@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { FileImage } from "lucide-react";
-import { AdSlot } from "@/components/AdSlot";
 import { BackgroundRemover } from "@/components/BackgroundRemover";
 import { RelatedTools } from "@/components/RelatedTools";
 import { SeoSections } from "@/components/SeoSections";
@@ -40,6 +39,5 @@ export default function Page() {
       </div>
       <RelatedTools activeSlug="remover-fundo-de-imagem" />
     </div>
-    <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
   </article>;
 }

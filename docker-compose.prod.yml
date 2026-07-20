@@ -3,8 +3,14 @@ services:
     build:
       args:
         PUBLIC_ORIGIN: https://www.4dtech.com.br
+        NEXT_PUBLIC_ADSENSE_CLIENT: ca-pub-4388472032924706
+        NEXT_PUBLIC_ADSENSE_HOME_SLOT: "4276803076"
+        NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT: "4276803076"
     environment:
       PUBLIC_ORIGIN: https://www.4dtech.com.br
+      NEXT_PUBLIC_ADSENSE_CLIENT: ca-pub-4388472032924706
+      NEXT_PUBLIC_ADSENSE_HOME_SLOT: "4276803076"
+      NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT: "4276803076"
 
   caddy:
     environment:

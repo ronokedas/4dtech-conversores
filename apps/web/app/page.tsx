@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, LockKeyhole, MonitorSmartphone, ShieldCheck } from "lucide-react";
-import { AdSlot } from "@/components/AdSlot";
 import { ToolsGrid } from "@/components/ToolsGrid";
 import { ToolIcon } from "@/components/ToolIcon";
 import { getToolBySlug } from "@/lib/tools";
@@ -40,7 +39,6 @@ export default function Home() {
         <div><CheckCircle2 /><strong>Grátis para usar</strong><p>Ferramentas essenciais gratuitas para facilitar o seu dia.</p></div>
         <div><MonitorSmartphone /><strong>Funciona em qualquer lugar</strong><p>Acesse de celular, tablet ou computador.</p></div>
       </section>
-      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
     </div>
   </>;
 }

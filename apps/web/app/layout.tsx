@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ConsentBanner } from "@/components/ConsentBanner";
+import { AdSlot } from "@/components/AdSlot";
 import { getPublicOrigin } from "@/lib/site";
 
 const origin = getPublicOrigin();
@@ -38,6 +39,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <Script id="schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       {adsClient ? <Script id="adsense-script" strategy="afterInteractive" data-ad-client={adsClient} src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsClient}`} crossOrigin="anonymous" /> : null}
     </head>
-    <body><Header /><main>{children}</main><Footer /><ConsentBanner /></body>
+    <body><Header /><main>{children}</main><AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} className="container global-ad" /><Footer /><ConsentBanner /></body>
   </html>;
 }
