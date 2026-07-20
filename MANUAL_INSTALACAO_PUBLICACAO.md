@@ -84,7 +84,7 @@ O arquivo que pode ir para o GitHub é:
 Nunca envie para o GitHub:
 
 - Chaves do Turnstile.
-- Código do AdSense.
+- Senhas ou credenciais privadas do Google. O identificador público `ca-pub` e o número público do slot do AdSense podem ficar no `.env.example`.
 - Senhas.
 - Tokens.
 - Arquivo `.env` real.
@@ -127,9 +127,51 @@ Se o repositório já existir localmente, use:
 ```powershell
 git status
 git add .
-git commit -m "Atualiza plataforma de documentos"
-git push
+git commit -m "Descreva aqui o que foi alterado"
+git push origin main
 ```
+
+### Rotina para enviar arquivos editados ao GitHub
+
+Sempre que editar arquivos no seu computador Windows, siga esta ordem:
+
+1. Abra o PowerShell e entre na pasta que possui o repositório Git conectado ao GitHub:
+
+```powershell
+cd C:\Users\ronok\Documents\Codex\2026-07-12\te\work\4dtech-conversores
+```
+
+2. Veja quais arquivos foram modificados:
+
+```powershell
+git status
+```
+
+3. Antes de enviar, confirme que o `.env` real não aparece na lista. Depois adicione as alterações:
+
+```powershell
+git add .
+```
+
+4. Crie o commit com uma mensagem que explique a mudança:
+
+```powershell
+git commit -m "Atualiza textos e configuracoes do site"
+```
+
+5. Envie para a branch principal do GitHub:
+
+```powershell
+git push origin main
+```
+
+6. Confira o último commit enviado:
+
+```powershell
+git log -1 --oneline
+```
+
+Se `git status` responder `nothing to commit`, não existem arquivos novos ou modificados para enviar.
 
 ---
 
@@ -149,7 +191,7 @@ Se quiser usar `www`:
 ```txt
 Tipo: CNAME
 Nome: www
-Valor: www.4dtech.com.br
+Valor: 4dtech.com.br
 TTL: automático ou 300
 ```
 
@@ -179,11 +221,41 @@ Ou, se usar outro usuário:
 ssh usuario@IP_DA_SUA_VPS
 ```
 
-Atualize a VPS:
+### Atualizar o Ubuntu antes da instalação
+
+Use `sudo` nos comandos administrativos. Atualize a lista de pacotes, instale as atualizações e remova pacotes antigos:
 
 ```bash
-apt update && apt upgrade -y
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+sudo apt clean
 ```
+
+Se o Ubuntu informar que é necessário reiniciar:
+
+```bash
+sudo reboot
+```
+
+A conexão SSH será encerrada. Aguarde alguns segundos e conecte novamente.
+
+### Instalar o editor Nano
+
+Instale e confira a versão:
+
+```bash
+sudo apt install -y nano
+nano --version
+```
+
+Para editar um arquivo, por exemplo o `.env`:
+
+```bash
+nano .env
+```
+
+No Nano, salve com `CTRL + O`, confirme com `ENTER` e saia com `CTRL + X`.
 
 ---
 
@@ -192,21 +264,24 @@ apt update && apt upgrade -y
 No Ubuntu:
 
 ```bash
-apt install -y ca-certificates curl git ufw
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME}) stable" > /etc/apt/sources.list.d/docker.list
-apt update
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt install -y ca-certificates curl git ufw nano
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME}) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
 Teste:
 
 ```bash
-docker --version
-docker compose version
+sudo docker --version
+sudo docker compose version
+sudo docker run --rm hello-world
 ```
+
+Neste manual, os comandos que acessam o serviço Docker usam `sudo`. Isso evita o erro `permission denied while trying to connect to the Docker API`.
 
 ---
 
@@ -215,11 +290,11 @@ docker compose version
 Libere apenas SSH, HTTP e HTTPS:
 
 ```bash
-ufw allow OpenSSH
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw --force enable
-ufw status
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+sudo ufw status
 ```
 
 ---
@@ -229,9 +304,12 @@ ufw status
 Crie uma pasta para sites:
 
 ```bash
-mkdir -p /opt/sites
+sudo mkdir -p /opt/sites
+sudo chown -R ubuntu:ubuntu /opt/sites
 cd /opt/sites
 ```
+
+Se seu usuário não for `ubuntu`, substitua `ubuntu:ubuntu` pelo usuário correto.
 
 Clone o projeto:
 
@@ -241,6 +319,8 @@ cd 4dtech-conversores
 ```
 
 Se o repositório for privado, o GitHub pode pedir autenticação via token.
+
+Não use `sudo git pull`. O Git deve ser executado pelo usuário dono da pasta. Usar Git com `sudo` pode criar arquivos pertencentes ao usuário `root` e causar problemas de permissão depois.
 
 ---
 
@@ -330,13 +410,14 @@ PUBLIC_ORIGIN=https://www.4dtech.com.br
 Na pasta do projeto:
 
 ```bash
-docker compose up -d --build
+cd /opt/sites/4dtech-conversores
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
 ```
 
 Verifique:
 
 ```bash
-docker compose ps
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 ```
 
 Você deve ver serviços como:
@@ -351,13 +432,72 @@ Você deve ver serviços como:
 Ver logs:
 
 ```bash
-docker compose logs -f
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
 ```
 
 Ver logs só da API e worker:
 
 ```bash
-docker compose logs -f api worker
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f api worker
+```
+
+Para sair da visualização contínua dos logs, pressione `CTRL + C`.
+
+### Atualizar a VPS depois de enviar alterações ao GitHub
+
+Depois de executar `git push origin main` no seu computador, conecte na VPS e siga:
+
+1. Entre na pasta do projeto:
+
+```bash
+cd /opt/sites/4dtech-conversores
+```
+
+2. Confirme que a pasta pertence ao usuário `ubuntu`. Este comando normalmente só precisa ser usado quando houve algum comando Git executado com `sudo`:
+
+```bash
+sudo chown -R ubuntu:ubuntu /opt/sites/4dtech-conversores
+```
+
+3. Baixe as alterações do GitHub sem usar `sudo`:
+
+```bash
+git pull origin main
+git log -1 --oneline
+```
+
+4. Reconstrua e recrie os containers usando `sudo`:
+
+```bash
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
+```
+
+5. Confira se os serviços estão funcionando:
+
+```bash
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+```
+
+6. Se algum serviço apresentar erro, veja os últimos logs:
+
+```bash
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=200
+```
+
+7. Teste o site e os arquivos técnicos:
+
+```bash
+curl -I https://www.4dtech.com.br
+curl -sS https://www.4dtech.com.br/ads.txt
+curl -sS https://www.4dtech.com.br/robots.txt
+curl -sS https://www.4dtech.com.br/sitemap.xml | head -20
+```
+
+Resumo da rotina:
+
+```txt
+Editar no Windows -> git add -> git commit -> git push
+VPS -> git pull -> sudo docker compose com os arquivos principal e de produção
 ```
 
 ---
@@ -439,7 +579,7 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x...
 Recrie os containers:
 
 ```bash
-docker compose up -d --build
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 ---
@@ -528,8 +668,8 @@ apps/web/components/AdSlot.tsx
 
 Os anúncios já estão posicionados:
 
-- Na home, abaixo do conteúdo útil.
-- Na página de download, abaixo do botão de download e separado dos controles.
+- Em todas as páginas públicas, depois do conteúdo útil.
+- Na página de download, depois do resultado e separado dos controles.
 
 Isso evita confundir anúncio com botão de download.
 
@@ -552,7 +692,7 @@ NEXT_PUBLIC_ADSENSE_DOWNLOAD_SLOT=4276803076
 Depois rode:
 
 ```bash
-docker compose up -d --build web
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build web
 ```
 
 Teste:
@@ -572,7 +712,7 @@ NEXT_PUBLIC_ADSENSE_CLIENT
 Exemplo esperado:
 
 ```txt
-google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+google.com, pub-4388472032924706, DIRECT, f08c47fec0942fa0
 ```
 
 ---
@@ -624,7 +764,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 4. Recrie o web:
 
 ```bash
-docker compose up -d --build web
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build web
 ```
 
 ---
@@ -643,14 +783,14 @@ Na VPS:
 
 ```bash
 cd /opt/sites/4dtech-conversores
-git pull
-docker compose up -d --build
+git pull origin main
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
 ```
 
 Verifique:
 
 ```bash
-docker compose ps
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 ```
 
 ---
@@ -660,55 +800,55 @@ docker compose ps
 Ver containers:
 
 ```bash
-docker compose ps
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 ```
 
 Ver logs gerais:
 
 ```bash
-docker compose logs -f
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
 ```
 
 Ver logs da API:
 
 ```bash
-docker compose logs -f api
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f api
 ```
 
 Ver logs do worker:
 
 ```bash
-docker compose logs -f worker
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f worker
 ```
 
 Reiniciar tudo:
 
 ```bash
-docker compose restart
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml restart
 ```
 
 Parar tudo:
 
 ```bash
-docker compose down
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml down
 ```
 
 Subir novamente:
 
 ```bash
-docker compose up -d
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 Ver uso de disco Docker:
 
 ```bash
-docker system df
+sudo docker system df
 ```
 
 Limpar imagens antigas sem uso:
 
 ```bash
-docker image prune -f
+sudo docker image prune -f
 ```
 
 ---
@@ -930,11 +1070,11 @@ O modo Flexible pode causar loop de redirecionamento e problemas de HTTPS, porqu
 Na VPS, libere:
 
 ```bash
-ufw allow OpenSSH
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw --force enable
-ufw status
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+sudo ufw status
 ```
 
 No `.env` da VPS, use:
@@ -997,7 +1137,7 @@ HOST_PORT=8090
 Na VPS, use o arquivo de produção junto com o compose principal:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 O `docker-compose.yml` usa as variáveis `HOST_PORT`, `HTTPS_PORT` e `HTTPS_UDP_PORT`.
@@ -1032,7 +1172,7 @@ Ou seja: na VPS você não precisa editar manualmente o `docker-compose.yml` pri
 Se alterar `.env` ou atualizar o código, suba novamente em produção com:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 Na VPS, mantenha:
