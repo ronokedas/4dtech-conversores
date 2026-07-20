@@ -180,11 +180,6 @@ services:
       - ./infra/robots.txt:/srv/static/robots.txt:ro
       - caddy_data:/data
       - caddy_config:/config
-    depends_on:
-      web:
-        condition: service_healthy
-      api:
-        condition: service_healthy
     restart: unless-stopped
     logging: *logging
 
