@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /baixar/
+Disallow: /api/
+
+Sitemap: https://www.4dtech.com.br/sitemap.xml

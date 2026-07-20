@@ -161,7 +161,7 @@ ls -la
 
 ```bash
 cd /opt/sites/4dtech-conversores
-sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 Confira:
@@ -218,7 +218,7 @@ cd /opt/sites/4dtech-conversores
 sudo chown -R ubuntu:ubuntu /opt/sites/4dtech-conversores
 git pull origin main
 git log -1 --oneline
-sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 ```
 
@@ -273,5 +273,5 @@ sudo docker image prune -f
 
 ```txt
 Windows: editar -> git add -> git commit -> git push
-VPS: git pull -> sudo docker compose up -d --build --force-recreate
+VPS: git pull -> sudo docker compose up -d --build
 ```

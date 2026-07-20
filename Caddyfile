@@ -9,6 +9,14 @@
 {$SITE_ADDRESS:http://localhost} {
 	encode zstd gzip
 
+	# Mantem o robots.txt acessivel mesmo durante reinicios do frontend.
+	handle /robots.txt {
+		root * /srv/static
+		header Content-Type "text/plain; charset=utf-8"
+		header Cache-Control "public, max-age=300"
+		file_server
+	}
+
 	@api path /api/conversions/*
 	handle @api {
 		uri strip_prefix /api
