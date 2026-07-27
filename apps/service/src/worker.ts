@@ -7,7 +7,6 @@ import { convert, launchBrowser } from "./convert.js";
 import { editPdf } from "./edit-pdf.js";
 import { processImage } from "./image-tools.js";
 import { convertVideoToMp3 } from "./media-tools.js";
-import { downloadYoutubeVideo } from "./youtube.js";
 import { convertExcelToPdf, convertPdfToExcel, convertPdfToWord, convertWordToPdf } from "./office.js";
 import { compressPdf, imageToPdf, mergePdfs, organizePdf, outputName, pdfToJpg, protectPdf, signPdf, splitPdf, unlockPdf } from "./pdf-tools.js";
 import { generateQrCode } from "./qr-code.js";
@@ -67,12 +66,6 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
       const result = await convertVideoToMp3(job);
       const base = path.basename(job.originalName, path.extname(job.originalName)).replace(/[^\p{L}\p{N}._-]+/gu, "-") || "audio";
       await setRecord(job.token, { status: "ready", filename: `${base}.mp3`, size: result.size, mimeType: "audio/mpeg", outputFile: "output.mp3", tool: "video-mp3", updatedAt: Date.now() });
-      return { size: result.size };
-    }
-
-    if (job.type === "youtube-mp4") {
-      const result = await downloadYoutubeVideo(job);
-      await setRecord(job.token, { status: "ready", filename: result.filename, size: result.size, mimeType: "video/mp4", outputFile: "output.mp4", tool: "youtube-mp4", updatedAt: Date.now() });
       return { size: result.size };
     }
 
@@ -147,7 +140,7 @@ const worker = new Worker<ConversionJob>("conversions", async (queued) => {
     await setRecord(job.token, { status: "failed", error: message.slice(0, 240), updatedAt: Date.now() });
     throw error;
   }
-}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs, config.audioTimeoutMs, config.mediaTimeoutMs, config.youtubeTimeoutMs) + 15_000 });
+}, { connection: bullConnection, concurrency: config.workerConcurrency, lockDuration: Math.max(config.conversionTimeoutMs, config.imageTimeoutMs, config.audioTimeoutMs, config.mediaTimeoutMs) + 15_000 });
 
 worker.on("error", (error) => console.error("worker error", error.message));
 const shutdown = async () => { await worker.close(); await browser.close(); await connection.quit(); process.exit(0); };

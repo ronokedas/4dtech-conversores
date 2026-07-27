@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, Download, FileImage, FileText, Mic, QrCode, RefreshCw, TriangleAlert, Video } from "lucide-react";
+import { Check, Download, FileImage, FileText, Mic, QrCode, RefreshCw, TriangleAlert } from "lucide-react";
 
 type Status = { status: "queued" | "processing" | "ready" | "failed" | "expired"; filename?: string; size?: number; mimeType?: string; tool?: string; error?: string };
 const formatSize = (bytes?: number) => bytes ? new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(bytes / 1024 / 1024) + " MB" : "";
@@ -13,7 +13,6 @@ export function DownloadStatus({ token }: { token: string }) {
   const isQrCode = data.tool === "qr-code";
   const isImageTool = data.tool === "compress-image" || data.tool === "resize-image" || data.tool === "convert-image";
   const isVideoMp3 = data.tool === "video-mp3" || data.mimeType === "audio/mpeg";
-  const isYoutubeVideo = data.tool === "youtube-mp4" || data.mimeType === "video/mp4";
   const isImage = isBackground || isQrCode || isImageTool || data.mimeType?.startsWith("image/");
   const isZip = data.tool === "pdf-jpg" || data.mimeType === "application/zip";
   const isText = data.tool === "audio-text" || data.mimeType?.startsWith("text/plain");
@@ -46,7 +45,6 @@ export function DownloadStatus({ token }: { token: string }) {
     "resize-image": "/redimensionar-imagem",
     "convert-image": "/converter-imagem",
     "video-mp3": "/video-para-mp3",
-    "youtube-mp4": "/baixar-video-youtube",
   };
   const anotherHref = data.tool ? toolRoute[data.tool] || "/html-para-pdf" : "/html-para-pdf";
   const copy = useMemo(() => {
@@ -125,13 +123,6 @@ export function DownloadStatus({ token }: { token: string }) {
       downloadText = "Baixar MP3";
       anotherText = "Converter outro vídeo";
       helpText = "Ouça o MP3 para conferir volume e duração. Vídeos sem áudio não geram um resultado útil.";
-    } else if (isYoutubeVideo) {
-      processingTitle = "Estamos preparando seu vídeo";
-      processingSmall = data.status === "queued" ? "Aguardando processamento..." : "Baixando e preparando o MP4...";
-      successTitle = "Seu vídeo está pronto";
-      downloadText = "Baixar MP4";
-      anotherText = "Baixar outro vídeo";
-      helpText = "Abra o MP4 e confira a qualidade antes de compartilhar. O arquivo será removido do servidor depois do download.";
     }
 
     return {
@@ -145,7 +136,7 @@ export function DownloadStatus({ token }: { token: string }) {
       helpTitle: "Depois de baixar",
       helpText,
     };
-  }, [anotherHref, data.mimeType, data.status, isBackground, isQrCode, isImageTool, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip, isText, isVideoMp3, isYoutubeVideo]);
+  }, [anotherHref, data.mimeType, data.status, isBackground, isQrCode, isImageTool, isWord, isExcel, isPdfWord, isPdfExcel, isEditPdf, isZip, isText, isVideoMp3]);
 
   useEffect(() => {
     let active = true; let timer: ReturnType<typeof setTimeout>;
@@ -162,6 +153,6 @@ export function DownloadStatus({ token }: { token: string }) {
 
   if (["queued", "processing"].includes(data.status)) return <section className="download-state" aria-live="polite"><div className="status-icon processing"><span className="spinner large" /></div><h1>{copy.processingTitle}</h1><p>{copy.processingText}</p><div className="progress"><span /></div><small>{copy.processingSmall}</small></section>;
   if (data.status === "failed" || data.status === "expired") return <section className="download-state" aria-live="assertive"><div className="status-icon error"><TriangleAlert /></div><h1>{data.status === "expired" ? "Este arquivo expirou" : "Não foi possível processar"}</h1><p>{data.error || "O arquivo não está mais disponível. Faça uma nova tentativa."}</p><Link href={anotherHref} className="button primary"><RefreshCw size={18}/> Tentar novamente</Link></section>;
-  const Icon = isYoutubeVideo ? Video : (isText || isVideoMp3 ? Mic : (isQrCode ? QrCode : (isImage || isZip ? FileImage : FileText)));
+  const Icon = isText || isVideoMp3 ? Mic : (isQrCode ? QrCode : (isImage || isZip ? FileImage : FileText));
   return <><section className="download-state success" aria-live="polite"><div className="status-icon success"><Check /></div><h1>{copy.successTitle}</h1><p>O arquivo será apagado do servidor depois que o download terminar.</p><div className="file-row"><Icon aria-hidden="true"/><div><strong>{data.filename}</strong><span>{formatSize(data.size)}</span></div></div><a className="button primary download-button" href={`${apiBase}/conversions/${token}/download`}><Download size={19}/> {copy.downloadText}</a><Link className="button secondary" href={copy.anotherHref}><RefreshCw size={17}/> {copy.anotherText}</Link></section><section className="download-help"><h2>{copy.helpTitle}</h2><p>{copy.helpText}</p><Link href="/ferramentas">Ver outras ferramentas</Link></section></>;
 }
