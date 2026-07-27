@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Mic, QrCode, Sheet } from "lucide-react";
+import { Code2, Edit3, FileImage, FileSpreadsheet, FileText, FileType, Mic, QrCode, Sheet, Video } from "lucide-react";
 
 export type ToolCategory = "pdf" | "imagem" | "conversores" | "audio";
 
@@ -13,12 +13,26 @@ export type ToolDefinition = {
   status: "available" | "soon";
   category: ToolCategory;
   icon: LucideIcon;
-  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit" | "audio" | "qr";
+  accent: "html" | "image" | "word" | "excel" | "pdf" | "edit" | "audio" | "qr" | "video";
   seoTitle: string;
   seoDescription: string;
 };
 
 export const tools: ToolDefinition[] = [
+  {
+    slug: "baixar-video-youtube",
+    title: "Baixar vídeo do YouTube",
+    shortTitle: "YouTube para MP4",
+    description: "Baixe vídeos autorizados do YouTube em MP4 até 1080p.",
+    longDescription: "Cole um link de vídeo ou Short público do YouTube e gere um MP4 temporário na qualidade que preferir.",
+    href: "/baixar-video-youtube",
+    status: "available",
+    category: "conversores",
+    icon: Video,
+    accent: "video",
+    seoTitle: "Baixar vídeo do YouTube em MP4",
+    seoDescription: "Baixe vídeos e Shorts autorizados do YouTube em MP4, com opções de até 1080p.",
+  },
   {
     slug: "transcrever-audio-em-texto",
     title: "Transcrever áudio em texto",

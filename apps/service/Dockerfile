@@ -23,7 +23,8 @@ FROM mcr.microsoft.com/playwright:v1.55.1-noble AS worker
 ENV NODE_ENV=production
 WORKDIR /app
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc libreoffice-core poppler-utils ghostscript qpdf zip ffmpeg fonts-dejavu fonts-liberation \
+  && apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc libreoffice-core poppler-utils ghostscript qpdf zip ffmpeg python3-pip fonts-dejavu fonts-liberation \
+  && pip3 install --no-cache-dir --break-system-packages yt-dlp==2026.7.4 \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/apps/service/dist ./dist

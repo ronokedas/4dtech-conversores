@@ -9,7 +9,7 @@ import multipart from "@fastify/multipart";
 import { config } from "./config.js";
 import { enforceRateLimit } from "./rate-limit.js";
 import { connection, jobKey, queue, setRecord } from "./redis.js";
-import { assertPublicUrl, verifyTurnstile } from "./security.js";
+import { assertPublicUrl, assertYoutubeVideoUrl, verifyTurnstile } from "./security.js";
 import { pdfOptionsSchema, type ConversionJob, type PdfUtilityJob } from "./types.js";
 
 process.umask(0o007);
@@ -345,6 +345,24 @@ app.post("/conversions/video-mp3", async (request, reply) => {
   const bitrate = ["96k", "128k", "192k", "256k"].includes(fields.bitrate || "") ? fields.bitrate as "96k" | "128k" | "192k" | "256k" : "128k";
   const job: ConversionJob = { token, type: "video-mp3", inputPath, originalName, bitrate, createdAt: Date.now() };
   await setRecord(token, { status: "queued", tool: "video-mp3", updatedAt: Date.now() });
+  await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
+  return reply.code(202).send({ token });
+});
+
+app.post("/conversions/youtube-mp4", async (request, reply) => {
+  const ip = await enforceRateLimit(request);
+  const body = request.body as Record<string, unknown> | null;
+  if (!body || typeof body.url !== "string") throw Object.assign(new Error("Informe o link do vídeo."), { statusCode: 400 });
+  if (body.authorized !== true) throw Object.assign(new Error("Confirme que você possui autorização para baixar este conteúdo."), { statusCode: 400 });
+  if (!(await verifyTurnstile(typeof body.turnstileToken === "string" ? body.turnstileToken : undefined, ip, config.turnstileSecret))) {
+    throw Object.assign(new Error("Nao foi possivel validar o desafio de seguranca."), { statusCode: 403 });
+  }
+  const sourceUrl = assertYoutubeVideoUrl(body.url.trim());
+  const quality = typeof body.quality === "number" && [360, 720, 1080].includes(body.quality) ? body.quality as 360 | 720 | 1080 : 720;
+  const token = crypto.randomBytes(24).toString("base64url");
+  await makeJobDir(token);
+  const job: ConversionJob = { token, type: "youtube-mp4", sourceUrl, quality, originalName: "video-youtube.mp4", createdAt: Date.now() };
+  await setRecord(token, { status: "queued", tool: "youtube-mp4", updatedAt: Date.now() });
   await queue.add("convert", job, { jobId: token, removeOnComplete: 100, removeOnFail: 100, attempts: 1 });
   return reply.code(202).send({ token });
 });

@@ -21,6 +21,7 @@ export const config = {
   imageTimeoutMs: number("IMAGE_TIMEOUT_MS", 60_000),
   audioTimeoutMs: number("AUDIO_TIMEOUT_MS", 900_000),
   mediaTimeoutMs: number("MEDIA_TIMEOUT_MS", 180_000),
+  youtubeTimeoutMs: number("YOUTUBE_TIMEOUT_MS", 900_000),
   workerConcurrency: number("WORKER_CONCURRENCY", 2),
   rateLimitTenMinutes: number("RATE_LIMIT_10_MINUTES", 300),
   rateLimitHour: number("RATE_LIMIT_HOUR", 2000),

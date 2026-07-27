@@ -70,6 +70,14 @@ export type VideoMp3Job = {
   bitrate: "96k" | "128k" | "192k" | "256k";
   createdAt: number;
 };
+export type YoutubeMp4Job = {
+  token: string;
+  type: "youtube-mp4";
+  sourceUrl: string;
+  quality: 360 | 720 | 1080;
+  originalName: string;
+  createdAt: number;
+};
 export type OfficeJob = {
   token: string;
   type: "word" | "excel" | "pdf-word" | "pdf-excel";
@@ -104,7 +112,7 @@ export type PdfUtilityJob = {
   fontSize?: number;
   createdAt: number;
 };
-export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | QrCodeJob | TextPdfJob | ImageUtilityJob | VideoMp3Job | OfficeJob | EditPdfJob | PdfUtilityJob;
+export type ConversionJob = PdfConversionJob | BackgroundJob | AudioTextJob | QrCodeJob | TextPdfJob | ImageUtilityJob | VideoMp3Job | YoutubeMp4Job | OfficeJob | EditPdfJob | PdfUtilityJob;
 
 export type JobRecord = {
   status: JobStatus;

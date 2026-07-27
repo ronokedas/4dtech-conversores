@@ -48,6 +48,31 @@ export async function assertPublicUrl(raw: string) {
   return url.toString();
 }
 
+const youtubeId = /^[A-Za-z0-9_-]{11}$/;
+
+/** Accept only a single public YouTube video or Short, never a playlist/channel URL. */
+export function assertYoutubeVideoUrl(raw: string) {
+  let url: URL;
+  try { url = new URL(raw); } catch { throw Object.assign(new Error("Informe um link válido do YouTube."), { statusCode: 400 }); }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+    throw Object.assign(new Error("Informe um link público do YouTube."), { statusCode: 400 });
+  }
+  const host = url.hostname.toLowerCase().replace(/^www\./, '').replace(/\.$/, '');
+  if (url.searchParams.has('list')) throw Object.assign(new Error("Playlists não são aceitas. Informe somente um vídeo."), { statusCode: 400 });
+
+  let id = '';
+  if (host === 'youtu.be') id = url.pathname.split('/').filter(Boolean)[0] || '';
+  if (host === 'youtube.com') {
+    if (url.pathname === '/watch') id = url.searchParams.get('v') || '';
+    else {
+      const parts = url.pathname.split('/').filter(Boolean);
+      if (parts.length === 2 && parts[0] === 'shorts') id = parts[1] || '';
+    }
+  }
+  if (!youtubeId.test(id)) throw Object.assign(new Error("Use um link de vídeo ou Short do YouTube."), { statusCode: 400 });
+  return `https://www.youtube.com/watch?v=${id}`;
+}
+
 export function clientIp(request: FastifyRequest) {
   const forwarded = request.headers["x-forwarded-for"];
   return (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || request.ip;
